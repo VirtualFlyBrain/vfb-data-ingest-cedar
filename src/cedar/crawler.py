@@ -3,6 +3,7 @@ import os
 import requests
 import urllib.parse
 from datetime import datetime as dt
+from vfb.repository import db
 from vfb import ingest
 
 logging.basicConfig()
@@ -15,6 +16,7 @@ GET_TEMPLATE_INSTANCE_DATA = "https://resource.metadatacenter.org/template-insta
 GET_ALL_USERS = "https://resource.metadatacenter.org/users"
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
+MIN_DATE = "2000-01-01T01:01:01-01:00"
 REQUEST_LIMIT = 499
 
 
@@ -23,10 +25,16 @@ def crawl():
     all_users = get_all_users()
     for template in templates:
         instances = get_template_instances(template)
+        last_updated_on = dt.strptime(MIN_DATE, DATE_FORMAT)
         for instance in instances:
             instance_data = get_instance_data(instance)
             editor = get_user(all_users, instance_data["oslc:modifiedBy"])
             ingest.ingest_data(editor, instance_data)
+            update_time = dt.strptime(instance_data["pav:lastUpdatedOn"], DATE_FORMAT)
+            if update_time > last_updated_on:
+                last_updated_on = update_time
+
+        db.update_last_crawling_time(template, dt.strftime(last_updated_on, DATE_FORMAT))
 
 
 def get_all_users():
@@ -57,8 +65,8 @@ def get_template_instances(template, template_instances=None, offset=0, limit=RE
     r = requests.get(LIST_TEMPLATE_INSTANCES.format(template=template, limit=limit, offset=offset), headers=headers)
     response = r.json()
 
-    # TODO get from neo4j
-    last_crawl_str = "2022-01-09T04:09:57-08:00"
+    last_crawl_str = db.get_last_crawling_time(template)
+    print(last_crawl_str)
     last_crawl_time = dt.strptime(last_crawl_str, DATE_FORMAT)
 
     log.info("Last crawl time of template instance '{}' is {}.".format(template, last_crawl_str))

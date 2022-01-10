@@ -1,2 +1,5 @@
 requests
 schedule
+neo4jrestclient==2.1.1
+psycopg2==2.8.4
+base36==0.1.1
