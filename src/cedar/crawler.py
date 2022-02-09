@@ -1,5 +1,7 @@
 import logging
 import os
+from builtins import print
+
 import requests
 import urllib.parse
 from datetime import datetime as dt
@@ -34,7 +36,7 @@ def crawl():
             if update_time > last_updated_on:
                 last_updated_on = update_time
 
-        db.update_last_crawling_time(template, dt.strftime(last_updated_on, DATE_FORMAT))
+        # db.update_last_crawling_time(template, dt.strftime(last_updated_on, DATE_FORMAT))
 
 
 def get_all_users():
@@ -66,7 +68,6 @@ def get_template_instances(template, template_instances=None, offset=0, limit=RE
     response = r.json()
 
     last_crawl_str = db.get_last_crawling_time(template)
-    print(last_crawl_str)
     last_crawl_time = dt.strptime(last_crawl_str, DATE_FORMAT)
 
     log.info("Last crawl time of template instance '{}' is {}.".format(template, last_crawl_str))
@@ -97,7 +98,8 @@ def get_all_templates():
     """
     log.info('Querying all templates shared with the crawler.')
     sharing = "shared-with-me"
-    publication_status = "bibo%3Apublished"
+    # publication_status = "bibo%3Apublished"
+    publication_status = "all"
     headers = {'Accept': 'application/json', 'Authorization': os.environ['CEDAR_API_KEY']}
     r = requests.get(GET_ALL_TEMPLATES.format(publication_status=publication_status, sharing=sharing), headers=headers)
     response = r.json()
@@ -106,5 +108,6 @@ def get_all_templates():
     for resource in response["resources"]:
         templates.add(resource["@id"])
 
+    log.info(templates)
     log.info('Total {} templates shared with the crawler'.format(len(templates)))
     return templates
