@@ -1,7 +1,7 @@
 import os
 import unittest
 import json
-from vfb.ingest import ingest_template_data
+from vfb.ingest import parse_template_data
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 SAMPLE_DATA_1 = os.path.join(current_dir, "./test_data/Baker2020_WED-PN1.json")
@@ -13,7 +13,7 @@ SAMPLE_DATA_4 = os.path.join(current_dir, "./test_data/Xu2020_1807191501.json")
 class IngestTest(unittest.TestCase):
 
     def test_ingest_data_1(self):
-        vfb_data = ingest_template_data(read_json(SAMPLE_DATA_1))
+        vfb_data = parse_template_data(read_json(SAMPLE_DATA_1))
 
         print(vfb_data)
         self.assertEqual("WED-PN1", vfb_data.primary_name)
@@ -31,7 +31,7 @@ class IngestTest(unittest.TestCase):
         self.assertEqual(None, vfb_data.filename)
 
     def test_ingest_data_2(self):
-        vfb_data = ingest_template_data(read_json(SAMPLE_DATA_2))
+        vfb_data = parse_template_data(read_json(SAMPLE_DATA_2))
 
         print(vfb_data)
         self.assertEqual("Multiglomerular mALT lvPN VC5+", vfb_data.primary_name)
@@ -40,7 +40,8 @@ class IngestTest(unittest.TestCase):
         self.assertEqual(0, len(vfb_data.driver_line))
         self.assertEqual("Marin2020", vfb_data.datasetid)
         self.assertEqual("http://virtualflybrain.org/reports/VFB_00101567", vfb_data.template_id)
-        self.assertEqual("http://purl.obolibrary.org/obo/FBbt_00007011", vfb_data.part_of)
+        self.assertEqual(1, len(vfb_data.part_of))
+        self.assertEqual("http://purl.obolibrary.org/obo/FBbt_00007011", vfb_data.part_of[0])
         self.assertEqual(2, len(vfb_data.input_neuropils))
         self.assertEqual("http://purl.obolibrary.org/obo/FBbt_00110029", vfb_data.input_neuropils[0])
         self.assertEqual("http://purl.obolibrary.org/obo/FBbt_00007053", vfb_data.input_neuropils[1])
@@ -51,7 +52,7 @@ class IngestTest(unittest.TestCase):
         self.assertEqual("57015", vfb_data.filename)
 
     def test_ingest_data_3(self):
-        vfb_data = ingest_template_data(read_json(SAMPLE_DATA_3))
+        vfb_data = parse_template_data(read_json(SAMPLE_DATA_3))
 
         print(vfb_data)
         self.assertEqual("MBON02", vfb_data.primary_name)
@@ -71,7 +72,7 @@ class IngestTest(unittest.TestCase):
         self.assertEqual("MBON02", vfb_data.filename)
 
     def test_ingest_data_4(self):
-        vfb_data = ingest_template_data(read_json(SAMPLE_DATA_4))
+        vfb_data = parse_template_data(read_json(SAMPLE_DATA_4))
 
         print(vfb_data)
         self.assertEqual("LLPC3", vfb_data.primary_name)

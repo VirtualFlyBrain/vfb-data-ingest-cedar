@@ -1,0 +1,108 @@
+{
+  "@context": {
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "pav": "http://purl.org/pav/",
+    "schema": "http://schema.org/",
+    "oslc": "http://open-services.net/ns/core#",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
+    "rdfs:label": {
+      "@type": "xsd:string"
+    },
+    "schema:isBasedOn": {
+      "@type": "@id"
+    },
+    "schema:name": {
+      "@type": "xsd:string"
+    },
+    "schema:description": {
+      "@type": "xsd:string"
+    },
+    "pav:derivedFrom": {
+      "@type": "@id"
+    },
+    "pav:createdOn": {
+      "@type": "xsd:dateTime"
+    },
+    "pav:createdBy": {
+      "@type": "@id"
+    },
+    "pav:lastUpdatedOn": {
+      "@type": "xsd:dateTime"
+    },
+    "oslc:modifiedBy": {
+      "@type": "@id"
+    },
+    "skos:notation": {
+      "@type": "xsd:string"
+    },
+    "primary_name": "https://schema.metadatacenter.org/properties/299cb94f-53de-48a5-98aa-b84055926d1d",
+    "classification": "https://schema.metadatacenter.org/properties/e61e0fa3-3cf8-4fe8-a84d-ed456bd98f4a",
+    "imaging_type": "https://schema.metadatacenter.org/properties/331b09cf-30ef-4da5-8bba-a7c1522c82c6",
+    "driver_line": "https://schema.metadatacenter.org/properties/cc82b6cc-a5e4-4033-8810-0c9547cd6371",
+    "dataset_id": "https://schema.metadatacenter.org/properties/872b1ae2-0a24-401a-9775-443c2a1a4e4d",
+    "template_id": "https://schema.metadatacenter.org/properties/7bd32240-74f9-465a-8c9f-55b8519a94d3",
+    "part of": "http://purl.obolibrary.org/obo/BFO_0000050",
+    "has soma location": "http://purl.obolibrary.org/obo/RO_0002100",
+    "has synaptic terminal in": "http://purl.obolibrary.org/obo/RO_0002130",
+    "alternative_names": "https://schema.metadatacenter.org/properties/57042024-7ba6-4688-8de4-db482346ff67",
+    "classification_comment": "https://schema.metadatacenter.org/properties/099772d4-20a7-4b41-be86-3ab5a6effb71",
+    "filename": "https://schema.metadatacenter.org/properties/50c5d4d5-2d8a-49a8-a4d5-60561fac27e3"
+  },
+  "primary_name": {
+    "@value": "Multiglomerular mALT lvPN VC5+"
+  },
+  "classification": {
+    "@id": "http://purl.obolibrary.org/obo/FBbt_00049762",
+    "rdfs:label": "adult antennal lobe projection neuron VM6+ lvPN 2"
+  },
+  "imaging_type": {
+    "@id": "http://purl.obolibrary.org/obo/FBbi_00000258",
+    "rdfs:label": "transmission electron microscopy (TEM)"
+  },
+  "driver_line": [
+    {}
+  ],
+  "dataset_id": {
+    "@value": "Zoglu2020"
+  },
+  "template_id": {
+    "@id": "http://virtualflybrain.org/reports/VFB_00101567",
+    "rdfs:label": "JRC2018Unisex"
+  },
+  "part of": [
+    {
+    "@id": "http://purl.obolibrary.org/obo/FBbt_00007011",
+    "rdfs:label": "female organism"
+  }
+    ]
+  ,
+  "has soma location": {
+    "@id": "http://purl.obolibrary.org/obo/FBbt_00100211",
+    "rdfs:label": "cell body rind of adult antennal lobe"
+  },
+  "has synaptic terminal in": [
+    {
+      "@id": "http://purl.obolibrary.org/obo/FBbt_00110029",
+      "rdfs:label": "antennal lobe glomerulus VM6"
+    },
+    {
+      "@id": "http://purl.obolibrary.org/obo/FBbt_00007053",
+      "rdfs:label": "adult lateral horn"
+    }
+  ],
+  "alternative_names": [
+    {
+      "@value": "VC5+ lvPN2#1"
+    },
+    {
+      "@value": "Multiglomerular mALT lvPN#R18"
+    }
+  ],
+  "classification_comment": {
+    "@value": "VC5 renamed to VM6"
+  },
+  "filename": {
+    "@value": "57015"
+  }
+}

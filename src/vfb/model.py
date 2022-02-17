@@ -45,7 +45,8 @@ class Neuron:
         self.projectid = ""
         # self.type_specimen = ""  # Removed for now, deal with this via add NeuronType
         self.alternative_names = []
-        self.external_identifiers = dict() # { GO: 001 }
+        self.external_identifiers = []
+        # self.external_identifiers = dict() # { GO: 001 }
         self.classification = "" # http://
         self.classification_comment = ""
         # self.url_skeleton_id = ""
