@@ -20,12 +20,16 @@ def get_user_details(user_orcid_id):
                                              admin_orcid=os.environ['CURATIONAPI_USER'],
                                              admin_apikey=os.environ['CURATIONAPI_KEY']),
                      headers=headers)
+    try:
+        json.loads(r.text)
+    except ValueError as e:
+        log.error("Error occurred while getting user {}".format(user_orcid_id) + "\n" + r.text)
+        return None
     return r.json()
 
 
 def post_neuron(data, user_orcid, api_key):
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
-    data.set_id("dummy_id")
     data_wrapper = dict()
     data_wrapper["neurons"] = [vars(data)]
     print(json.dumps(data_wrapper))
@@ -39,3 +43,5 @@ def post_neuron(data, user_orcid, api_key):
     #                   json=data)
     print(r.status_code)
     print(r.text)
+
+    return r.status_code, r.json()

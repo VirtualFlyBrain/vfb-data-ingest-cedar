@@ -1,13 +1,14 @@
 import logging
 from vfb.model import Neuron, NeuronType, Dataset
 from vfb.ingest_api_client import get_user_details, post_neuron
+from exception.crawler_exception import CrawlerException
 
 logging.basicConfig()
 logging.root.setLevel(logging.INFO)
 log = logging.getLogger(__name__)
 
 
-def ingest_data(user, metadata):
+def ingest_data(user, metadata, template_instance):
     print(user)
     print(metadata)
 
@@ -15,24 +16,48 @@ def ingest_data(user, metadata):
     # user_orcid = user["orcid_id"]
     user_orcid = "https://orcid.org/0000-0002-7356-1779"
 
-    data_obj = parse_template_data(metadata)
+    data_obj = parse_template_data(metadata, template_instance)
 
     if isinstance(data_obj, Neuron):
-        post_neuron(data_obj, user_orcid, get_user_details(user_orcid)["apikey"])
+        vfb_user = get_user_details(user_orcid)
+        if vfb_user:
+            post_neuron(data_obj, user_orcid, vfb_user["apikey"])
+        else:
+            log.error("Error in accessing vfb user: " + user_orcid)
 
 
-def parse_template_data(metadata):
+def parse_template_data(metadata, template_instance):
     if "imaging_type" in metadata or "classification" in metadata or "driver_line" in metadata:
         data_obj = Neuron(metadata["primary_name"]["@value"])
         auto_fill_data_obj(data_obj, metadata)
 
-        # naming outliers
+        # handle outlier fields and transformations
         if "dataset_id" in metadata:
             data_obj.set_datasetid(get_metadata_value(metadata["dataset_id"]))
         if "has synaptic terminal in" in metadata:
             data_obj.set_input_neuropils(get_metadata_value(metadata["has synaptic terminal in"]))
+        if isinstance(data_obj.part_of, str):
+            # part_of is list by default, but ui is only providing single value (gender) now
+            data_obj.set_part_of([data_obj.part_of])
+
+        # VFB_neo4 KB_tools requires string values, transform them
+        imaging_type_lookup = {
+            'FBbi_00000224': 'computer graphic',
+            'VFBext_0000014': 'channel',
+            'FBbi_00000251': 'confocal microscopy',
+            'FBbi_00000585': 'SB-SEM',
+            'FBbi_00050000': 'SB-SEM',
+            'FBbi_00000258': 'TEM'
+        }
+        if data_obj.imaging_type:
+            if data_obj.imaging_type in imaging_type_lookup:
+                data_obj.set_imaging_type(imaging_type_lookup[data_obj.imaging_type])
+            else:
+                raise ValueError("Unsupported imaging type '{imaging_type}' in the template: {template_instance}"
+                                 .format(imaging_type=data_obj.imaging_type, template_instance=template_instance))
+
     else:
-        raise ValueError("Unrecognised template data: " + metadata)
+        raise ValueError("Unrecognised template data: " + template_instance)
 
     return data_obj
 
@@ -41,12 +66,16 @@ def auto_fill_data_obj(data_obj, metadata):
     for prop, value in vars(data_obj).items():
         setter_function = getattr(data_obj, "set_" + prop, None)
         if callable(setter_function):
+            value = None
             if prop in metadata:
-                setter_function(get_metadata_value(metadata[prop]))
+                value = get_metadata_value(metadata[prop])
             elif prop.replace("_", " ") in metadata:
-                setter_function(get_metadata_value(metadata[prop.replace("_", " ")]))
+                value = get_metadata_value(metadata[prop.replace("_", " ")])
             else:
                 print("Property '" + prop + "' does not exist in the metadata of template " + str(type(data_obj)))
+
+            if value:
+                setter_function(value)
 
 
 def get_metadata_value(metadata_prop):

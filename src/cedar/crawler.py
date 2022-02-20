@@ -31,7 +31,7 @@ def crawl():
         for instance in instances:
             instance_data = get_instance_data(instance)
             editor = get_user(all_users, instance_data["oslc:modifiedBy"])
-            ingest.ingest_data(editor, instance_data)
+            ingest.ingest_data(editor, instance_data, instance)
             update_time = dt.strptime(instance_data["pav:lastUpdatedOn"], DATE_FORMAT)
             if update_time > last_updated_on:
                 last_updated_on = update_time

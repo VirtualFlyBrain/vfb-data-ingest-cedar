@@ -64,9 +64,12 @@
     {}
   ],
   "dataset_id": {
-    "@value": null
+    "@value": "Zoglu2020"
   },
-  "template_id": {},
+  "template_id": {
+    "@id": "http://virtualflybrain.org/reports/VFB_00101567",
+    "rdfs:label": "JRC2018Unisex"
+  },
   "part of": {
     "@id": "http://purl.obolibrary.org/obo/FBbt_00007011",
     "rdfs:label": "female organism"
