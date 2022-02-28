@@ -16,6 +16,7 @@ GET_ALL_TEMPLATES = "https://resource.metadatacenter.org/search?resource_types=t
 LIST_TEMPLATE_INSTANCES = "https://resource.metadatacenter.org/search?version=all&publication_status=all&is_based_on={template}&sort=lastUpdatedOnTS&limit=499&offset={offset}"
 GET_TEMPLATE_INSTANCE_DATA = "https://resource.metadatacenter.org/template-instances/{template_instance}?format=jsonld"
 GET_ALL_USERS = "https://resource.metadatacenter.org/users"
+GET_USER_ORCID_ID = "https://user.metadatacenter.org/users/{}/summary"
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 MIN_DATE = "2000-01-01T01:01:01-01:00"
@@ -24,19 +25,45 @@ REQUEST_LIMIT = 499
 
 def crawl():
     templates = get_all_templates()
-    all_users = get_all_users()
     for template in templates:
         instances = get_template_instances(template)
         last_updated_on = dt.strptime(MIN_DATE, DATE_FORMAT)
         for instance in instances:
-            instance_data = get_instance_data(instance)
-            editor = get_user(all_users, instance_data["oslc:modifiedBy"])
-            ingest.ingest_data(editor, instance_data, instance)
-            update_time = dt.strptime(instance_data["pav:lastUpdatedOn"], DATE_FORMAT)
-            if update_time > last_updated_on:
-                last_updated_on = update_time
+            try:
+                instance_data = get_instance_data(instance)
+                editor = get_user_orcid(instance_data["oslc:modifiedBy"])
+                ingest.ingest_data(editor, instance_data, instance)
+                update_time = dt.strptime(instance_data["pav:lastUpdatedOn"], DATE_FORMAT)
+                if update_time > last_updated_on:
+                    last_updated_on = update_time
+            except Exception as err:
+                log.error("Exception occurred while processing instance '{}' of template '{}'.".format(instance, template))
+                log.error("Exception occurred during crawling: " + str(err))
+                # db.update_last_crawling_time(template, dt.strftime(last_updated_on, DATE_FORMAT))
+                log.error("Stopping the crawling.")
+                break
 
         # db.update_last_crawling_time(template, dt.strftime(last_updated_on, DATE_FORMAT))
+
+
+def get_user_orcid(user_id):
+    log.info("Getting user orcid_id from cedar: " + user_id)
+    user_id_short = user_id.rsplit('/', 1)[-1]
+
+    headers = {'Accept': 'application/json', 'Authorization': os.environ['CEDAR_API_KEY']}
+    r = requests.get(GET_USER_ORCID_ID.format(user_id_short), headers=headers)
+    response = r.json()
+
+    orcid_id = None
+    if "authenticationProvider" in response and len(response["authenticationProvider"]) > 0:
+        for provider in response["authenticationProvider"]:
+            if provider["name"] == "oidc-orcid":
+                orcid_id = provider["id"]
+
+    if not orcid_id:
+        raise ValueError("User's orcid_id couldn't be found in CEDAR: " + user_id)
+
+    return orcid_id
 
 
 def get_all_users():
@@ -85,7 +112,7 @@ def get_template_instances(template, template_instances=None, offset=0, limit=RE
             break
 
     if len(response["resources"]) == REQUEST_LIMIT and not reached_already_processed_data:
-        get_template_instances(template, template_instances, offset=offset+REQUEST_LIMIT+1, limit=REQUEST_LIMIT)
+        get_template_instances(template, template_instances, offset=offset + REQUEST_LIMIT + 1, limit=REQUEST_LIMIT)
     log.info('Total {} new template instances found for processing.'.format(len(template_instances)))
     return template_instances
 

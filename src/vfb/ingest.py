@@ -1,29 +1,25 @@
 import logging
 from vfb.model import Neuron, NeuronType, Dataset
 from vfb.ingest_api_client import get_user_details, post_neuron
-from exception.crawler_exception import CrawlerException
+from exception.crawler_exception import CrawlerException, TemplateParserException
 
 logging.basicConfig()
 logging.root.setLevel(logging.INFO)
 log = logging.getLogger(__name__)
 
 
+ORCID_ID_PREFIX = "https://orcid.org/"
+
+
 def ingest_data(user, metadata, template_instance):
-    print(user)
-    print(metadata)
+    log.info("Ingesting: " + str(metadata))
 
-    # TODO use test user till cedar support orcid login
-    # user_orcid = user["orcid_id"]
-    user_orcid = "https://orcid.org/0000-0002-7356-1779"
-
+    user_orcid = ORCID_ID_PREFIX + user
     data_obj = parse_template_data(metadata, template_instance)
 
     if isinstance(data_obj, Neuron):
         vfb_user = get_user_details(user_orcid)
-        if vfb_user:
-            post_neuron(data_obj, user_orcid, vfb_user["apikey"])
-        else:
-            log.error("Error in accessing vfb user: " + user_orcid)
+        post_neuron(data_obj, user_orcid, vfb_user["apikey"])
 
 
 def parse_template_data(metadata, template_instance):
@@ -39,27 +35,30 @@ def parse_template_data(metadata, template_instance):
         if isinstance(data_obj.part_of, str):
             # part_of is list by default, but ui is only providing single value (gender) now
             data_obj.set_part_of([data_obj.part_of])
-
-        # VFB_neo4 KB_tools requires string values, transform them
-        imaging_type_lookup = {
-            'FBbi_00000224': 'computer graphic',
-            'VFBext_0000014': 'channel',
-            'FBbi_00000251': 'confocal microscopy',
-            'FBbi_00000585': 'SB-SEM',
-            'FBbi_00050000': 'SB-SEM',
-            'FBbi_00000258': 'TEM'
-        }
-        if data_obj.imaging_type:
-            if data_obj.imaging_type in imaging_type_lookup:
-                data_obj.set_imaging_type(imaging_type_lookup[data_obj.imaging_type])
-            else:
-                raise ValueError("Unsupported imaging type '{imaging_type}' in the template: {template_instance}"
-                                 .format(imaging_type=data_obj.imaging_type, template_instance=template_instance))
-
+        parse_imaging_type(data_obj, template_instance)
     else:
-        raise ValueError("Unrecognised template data: " + template_instance)
+        raise TemplateParserException("Unrecognised template data: " + template_instance)
 
     return data_obj
+
+
+def parse_imaging_type(data_obj, template_instance):
+    # VFB_neo4 KB_tools requires string values, transform them
+    imaging_type_lookup = {
+        'FBbi_00000224': 'computer graphic',
+        'VFBext_0000014': 'channel',
+        'FBbi_00000251': 'confocal microscopy',
+        'FBbi_00000585': 'SB-SEM',
+        'FBbi_00050000': 'SB-SEM',
+        'FBbi_00000258': 'TEM'
+    }
+    if data_obj.imaging_type:
+        if data_obj.imaging_type in imaging_type_lookup:
+            data_obj.set_imaging_type(imaging_type_lookup[data_obj.imaging_type])
+        else:
+            raise TemplateParserException("Unsupported imaging type '{imaging_type}' in the template: "
+                                          "{template_instance}".format(imaging_type=data_obj.imaging_type,
+                                                                       template_instance=template_instance))
 
 
 def auto_fill_data_obj(data_obj, metadata):
@@ -71,15 +70,13 @@ def auto_fill_data_obj(data_obj, metadata):
                 value = get_metadata_value(metadata[prop])
             elif prop.replace("_", " ") in metadata:
                 value = get_metadata_value(metadata[prop.replace("_", " ")])
-            else:
-                print("Property '" + prop + "' does not exist in the metadata of template " + str(type(data_obj)))
-
+            # else:
+            #     print("Property '" + prop + "' does not exist in the metadata of template " + str(type(data_obj)))
             if value:
                 setter_function(value)
 
 
 def get_metadata_value(metadata_prop):
-    print(str(metadata_prop) + "   " + str(type(metadata_prop)))
     if isinstance(metadata_prop, list):
         value = list()
         for item in metadata_prop:
