@@ -22,6 +22,7 @@ def main():
     log.info('>>>>> Crawler started {}'.format(datetime.now().strftime("%m/%d/%Y, %H:%M:%S")))
     crawler.crawl()
     log.info('>>>>> Crawler completed {}'.format(datetime.now().strftime("%m/%d/%Y, %H:%M:%S")))
+    log.info('SUCCESS')
 
 
 if __name__ == "__main__":
