@@ -18,10 +18,12 @@ SUCCESS = 201
 def get_user_details(user_orcid_id):
     log.info("Getting user details from VFB ingest api '{}'.".format(user_orcid_id))
     headers = {'Accept': 'application/json'}
-    r = requests.get(GET_USER_DETAILS.format(curation_api=os.environ['CURATIONAPI'],
-                                             user_orcid=user_orcid_id,
-                                             admin_orcid=os.environ['CURATIONAPI_USER'],
-                                             admin_apikey=os.environ['CURATIONAPI_KEY']),
+    service_url = GET_USER_DETAILS.format(curation_api=os.environ['CURATIONAPI'],
+                                          user_orcid=user_orcid_id,
+                                          admin_orcid=os.environ['CURATIONAPI_USER'],
+                                          admin_apikey=os.environ['CURATIONAPI_KEY'])
+    log.info("Request made: ".format(service_url))
+    r = requests.get(service_url,
                      headers=headers)
 
     if r.status_code != 200:

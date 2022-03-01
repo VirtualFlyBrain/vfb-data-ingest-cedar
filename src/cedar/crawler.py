@@ -27,6 +27,8 @@ def crawl():
     for template in templates:
         instances = get_template_instances(template)
         last_updated_on = dt.strptime(MIN_DATE, DATE_FORMAT)
+
+        status = True
         for instance in instances:
             try:
                 instance_data = get_instance_data(instance)
@@ -40,9 +42,11 @@ def crawl():
                 log.error("Exception occurred during crawling: " + str(err))
                 # db.update_last_crawling_time(template, dt.strftime(last_updated_on, DATE_FORMAT))
                 log.error("Stopping the crawling.")
+                status = False
                 break
 
         # db.update_last_crawling_time(template, dt.strftime(last_updated_on, DATE_FORMAT))
+        return status
 
 
 def get_user_orcid(user_id):
