@@ -24,6 +24,8 @@ def main():
     log.info('>>>>> Crawling completed {}'.format(datetime.now().strftime("%m/%d/%Y, %H:%M:%S")))
     if status:
         log.info('SUCCESS')
+    else:
+        log.info('FAILURE')
 
 
 if __name__ == "__main__":
