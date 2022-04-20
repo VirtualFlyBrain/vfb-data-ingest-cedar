@@ -101,8 +101,8 @@ class IngestApiTest(unittest.TestCase):
         self.assertEqual("MBON02", written_data["primary_name"])
         self.assertEqual("http://purl.obolibrary.org/obo/FBbt_00111012", written_data["classification"])
         self.assertEqual("confocal microscopy", written_data["imaging_type"])
-        self.assertEqual(1, len(written_data["driver_line"]))
-        self.assertEqual("VFBexp_FBtp0099466FBtp0099529", written_data["driver_line"][0])
+        # self.assertEqual(1, len(written_data["driver_line"]))
+        # self.assertEqual("VFBexp_FBtp0099466FBtp0099529", written_data["driver_line"][0])
         self.assertEqual("http://virtualflybrain.org/reports/Zoglu2020", written_data["datasetid"])
         self.assertEqual("VFB_00101567", written_data["template_id"])
         self.assertEqual(1, len(written_data["part_of"]))
@@ -111,8 +111,9 @@ class IngestApiTest(unittest.TestCase):
         self.assertTrue("FBbt_00013694" in written_data["input_neuropils"])
         self.assertTrue("FBbt_00110658" in written_data["input_neuropils"])
         self.assertTrue("FBbt_00007145" in written_data["input_neuropils"])
-        self.assertEqual(0, len(written_data["alternative_names"]))
-        self.assertEqual("", written_data["classification_comment"])
+        # self.assertEqual(0, len(written_data["alternative_names"]))
+        self.assertFalse(written_data["alternative_names"])
+        self.assertEqual("comment1", written_data["classification_comment"])
         self.assertEqual("MBON02", written_data["filename"])
 
     def test_post_neuron4(self):

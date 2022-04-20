@@ -59,10 +59,10 @@ class IngestTest(unittest.TestCase):
         self.assertEqual("MBON02", vfb_data.primary_name)
         self.assertEqual("FBbt_00111012", vfb_data.classification)
         self.assertEqual("confocal microscopy", vfb_data.imaging_type)
-        self.assertEqual(1, len(vfb_data.driver_line))
-        self.assertEqual("VFBexp_FBtp0099466FBtp0099529", vfb_data.driver_line[0])
+        # self.assertEqual(1, len(vfb_data.driver_line))
+        # self.assertEqual("VFBexp_FBtp0099466FBtp0099529", vfb_data.driver_line[0])
         self.assertEqual("Zoglu2020", vfb_data.datasetid)
-        self.assertEqual("", vfb_data.template_id)
+        self.assertEqual("VFB_00101567", vfb_data.template_id)
         self.assertEqual(1, len(vfb_data.part_of))
         self.assertEqual("FBbt_00007004", vfb_data.part_of[0])
         self.assertEqual(3, len(vfb_data.input_neuropils))
@@ -70,7 +70,7 @@ class IngestTest(unittest.TestCase):
         self.assertEqual("FBbt_00110658", vfb_data.input_neuropils[1])
         self.assertEqual("FBbt_00007145", vfb_data.input_neuropils[2])
         self.assertEqual(0, len(vfb_data.alternative_names))
-        self.assertEqual("", vfb_data.classification_comment)
+        self.assertEqual("comment1", vfb_data.classification_comment)
         self.assertEqual("MBON02", vfb_data.filename)
 
     def test_ingest_data_4(self):
