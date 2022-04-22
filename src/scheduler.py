@@ -1,4 +1,7 @@
 import logging
+import os
+import json
+
 import schedule
 import time
 from datetime import datetime
@@ -19,9 +22,10 @@ def schedule_crawler():
 
 
 def main():
-    log.info('>>>>> Crawler started {}'.format(datetime.now().strftime("%m/%d/%Y, %H:%M:%S")))
-    status = crawler.crawl()
-    log.info('>>>>> Crawling completed {}'.format(datetime.now().strftime("%m/%d/%Y, %H:%M:%S")))
+    crawling_types = json.loads(os.getenv("CRAWL_TYPE", "[Dataset, Neuron]"))
+    log.info(">>>>> Crawler started {} for types: ''".format(datetime.now().strftime("%m/%d/%Y, %H:%M:%S"), str(crawling_types)))
+    status = crawler.crawl(crawling_types)
+    log.info(">>>>> Crawling completed {} for types: ''".format(datetime.now().strftime("%m/%d/%Y, %H:%M:%S"), str(crawling_types)))
     if status:
         log.info('SUCCESS')
     else:

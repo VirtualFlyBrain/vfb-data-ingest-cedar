@@ -1,7 +1,7 @@
 import os
 import unittest
 import json
-from vfb.ingest_api_client import get_user_details, post_neuron
+from vfb.ingest_api_client import get_user_details, post_neuron, post_dataset, download_neuron_image
 from vfb.ingest import parse_template_data
 
 from exception.crawler_exception import CrawlerException
@@ -13,6 +13,7 @@ NEURON_SAMPLE_DATA_2 = os.path.join(current_dir, "./test_data/Marin2020_57015.js
 NEURON_SAMPLE_DATA_3 = os.path.join(current_dir, "./test_data/Test2022_MBON02.json")
 NEURON_SAMPLE_DATA_4 = os.path.join(current_dir, "./test_data/Xu2020_1807191501.json")
 NEURON_EXCEPTION_DATA = os.path.join(current_dir, "./test_data/Exception_data.json")
+DATASET_1 = os.path.join(current_dir, "./test_data/Dataset1.json")
 
 
 class IngestApiTest(unittest.TestCase):
@@ -168,6 +169,29 @@ class IngestApiTest(unittest.TestCase):
         except CrawlerException as err:
             self.assertTrue(str(err.message).startswith(
                 "Error occurred while posting neurons of user https://orcid.org/0000-0002-7356-1779"))
+
+    def test_post_dataset(self):
+        vfb_data = parse_template_data(read_json(DATASET_1), "test_template_instance")
+        status_code, response_data = post_dataset(vfb_data, "https://orcid.org/0000-0002-7356-1779", "xyz")
+
+        self.assertEqual(201, status_code)
+        self.assertTrue(response_data)
+        self.assertEqual("ABCD_ds1", response_data)
+
+    def test_download_neuron_image(self):
+        test_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)), "./test_data/images/")
+        test_url = "https://raw.githubusercontent.com/VirtualFlyBrain/vfb-data-ingest-cedar/main/src/test/test_data/Exception_data.json"
+
+        os.environ["IMAGES_FOLDER_PATH"] = str(test_folder)
+        print(os.getenv("IMAGES_FOLDER_PATH"))
+        expected_file = os.path.join(test_folder, "Exception_data.json")
+        print(str(expected_file))
+        if os.path.exists(expected_file):
+            os.remove(expected_file)
+
+        self.assertFalse(os.path.isfile(expected_file))
+        download_neuron_image(test_url)
+        self.assertTrue(os.path.isfile(expected_file))
 
 
 def read_json(file_name):

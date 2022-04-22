@@ -22,7 +22,7 @@ MIN_DATE = "2000-01-01T01:01:01-01:00"
 REQUEST_LIMIT = 499
 
 
-def crawl():
+def crawl(crawling_types):
     templates = get_all_templates()
     for template in templates:
         instances = get_template_instances(template)
@@ -32,8 +32,9 @@ def crawl():
         for instance in instances:
             try:
                 instance_data = get_instance_data(instance)
+                # if instance_data["publish"][0]["@value"]:
                 editor = get_user_orcid(instance_data["oslc:modifiedBy"])
-                ingest.ingest_data(editor, instance_data, instance)
+                ingest.ingest_data(editor, instance_data, instance, crawling_types)
                 update_time = dt.strptime(instance_data["pav:lastUpdatedOn"], DATE_FORMAT)
                 if update_time > last_updated_on:
                     last_updated_on = update_time

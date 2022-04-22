@@ -7,6 +7,8 @@ ENV CEDAR_API_KEY=""
 ENV CURATIONAPI="http://localhost:5000/api"
 ENV CURATIONAPI_USER="https://orcid.org/cedar_crawler"
 ENV CURATIONAPI_KEY = ""
+ENV CRAWL_TYPE = '["Dataset", "Neuron"]'
+ENV IMAGES_FOLDER_PATH = '/images/'
 
 RUN apt-get update && \
     apt-get install ca-certificates -y && \

@@ -91,5 +91,13 @@
   },
   "filename": {
     "@value": null
-  }
+  },
+  "image_location": {
+    "@value": "https://raw.githubusercontent.com/VirtualFlyBrain/vfb-data-ingest-cedar/main/src/test/test_data/Exception_data.json"
+  },
+  "publish": [
+    {
+      "@value": "publish"
+    }
+  ]
 }

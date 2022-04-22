@@ -98,5 +98,13 @@
   },
   "filename": {
     "@value": "MBON02"
-  }
+  },
+  "image_location": {
+    "@value": ""
+  },
+  "publish": [
+    {
+      "@value": "publish"
+    }
+  ]
 }

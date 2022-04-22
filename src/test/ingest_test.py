@@ -8,6 +8,8 @@ SAMPLE_DATA_1 = os.path.join(current_dir, "./test_data/Baker2020_WED-PN1.json")
 SAMPLE_DATA_2 = os.path.join(current_dir, "./test_data/Marin2020_57015.json")
 SAMPLE_DATA_3 = os.path.join(current_dir, "./test_data/Test2022_MBON02.json")
 SAMPLE_DATA_4 = os.path.join(current_dir, "./test_data/Xu2020_1807191501.json")
+SAMPLE_DATA_5 = os.path.join(current_dir, "./test_data/neuron_not_publish.json")
+DATASET_1 = os.path.join(current_dir, "./test_data/Dataset1.json")
 
 
 class IngestTest(unittest.TestCase):
@@ -91,6 +93,23 @@ class IngestTest(unittest.TestCase):
         self.assertEqual(0, len(vfb_data.alternative_names))
         self.assertEqual("", vfb_data.classification_comment)
         self.assertEqual("1807191501", vfb_data.filename)
+
+    def test_ingest_data_5(self):
+        vfb_data = parse_template_data(read_json(SAMPLE_DATA_5), "test_template_instance")
+
+        print(vfb_data)
+        self.assertFalse(vfb_data)
+
+    def test_ingest_dataset_1(self):
+        vfb_data = parse_template_data(read_json(DATASET_1), "test_template_instance")
+
+        self.assertEqual("ABCD_ds1", vfb_data.short_name)
+        self.assertEqual("http://virtualflybrain.org/project/ABCD", vfb_data.projectid)
+        self.assertEqual("ABCD Dataset1", vfb_data.title)
+        self.assertEqual("ABCD Dataset1 description", vfb_data.description)
+        self.assertEqual("https://doi.org/10.1093/mind/LIX.236.433", vfb_data.publication)
+        self.assertEqual("VFBlicense_CC_BY_4_0", vfb_data.license)
+        self.assertEqual("", vfb_data.source_data)
 
 
 def read_json(file_name):
