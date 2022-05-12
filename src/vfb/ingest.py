@@ -1,6 +1,6 @@
 import logging
 from vfb.model import Neuron, NeuronType, Dataset
-from vfb.ingest_api_client import get_user_details, post_neuron, post_dataset
+from vfb.ingest_api_client import get_user_details, post_neuron, post_dataset, download_neuron_image
 from exception.crawler_exception import CrawlerException, TemplateParserException
 
 logging.basicConfig()
@@ -102,7 +102,10 @@ def is_neuron_published(metadata):
     Determines if neuron type is published. If not published "publish" field value is None.
     return: Value of the "publish" field
     """
-    return get_metadata_value(metadata["publish"])
+    if "publish" in metadata:
+        return get_metadata_value(metadata["publish"])
+    else:
+        return None
 
 
 def auto_fill_data_obj(data_obj, metadata):

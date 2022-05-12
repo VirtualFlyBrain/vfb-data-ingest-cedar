@@ -3,7 +3,7 @@ import os
 import requests
 import json
 
-from exception.crawler_exception import CrawlerException
+from exception.crawler_exception import CrawlerException, ContentException
 
 logging.basicConfig()
 logging.root.setLevel(logging.INFO)
@@ -45,7 +45,7 @@ def post_neuron(data, user_orcid, api_key):
     if r.status_code != SUCCESS:
         log.error("Error occurred while posting neurons of user {} data {}".format(user_orcid, str(data)))
         log.error("Internal cause of neuron post error is: " + "\n" + r.text)
-        raise CrawlerException("Error occurred while posting neurons of user {} : {}".format(user_orcid, r.text))
+        raise ContentException("Internal cause of neuron post error is: " + "\n" + r.text)
 
     return r.status_code, r.json()
 
@@ -81,6 +81,6 @@ def post_dataset(data, user_orcid, api_key):
     if r.status_code != SUCCESS:
         log.error("Error occurred while posting dataset of user {} data {}".format(user_orcid, str(data)))
         log.error("Internal cause of dataset post error is: " + "\n" + r.text)
-        raise CrawlerException("Error occurred while posting dataset of user {} : {}".format(user_orcid, r.text))
+        raise ContentException("Internal cause of dataset post error is: " + "\n" + r.text)
 
     return r.status_code, r.json()

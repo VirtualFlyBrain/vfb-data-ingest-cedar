@@ -1,19 +1,40 @@
 
-class CrawlerException(Exception):
+
+class TechnicalException(Exception):
+    """
+    These exceptions are reported to the technical maintenance team.
+    """
 
     def __init__(self, message):
         Exception.__init__(self)
         self.message = message
 
 
-class TemplateParserException(Exception):
+class ContentException(Exception):
+    """
+    These exceptions are reported to the editor of the template.
+    """
 
     def __init__(self, message):
         Exception.__init__(self)
         self.message = message
 
 
-class VfbClientException(Exception):
+class TemplateParserException(ContentException):
+
+    def __init__(self, message):
+        Exception.__init__(self)
+        self.message = message
+
+
+class CrawlerException(TechnicalException):
+
+    def __init__(self, message):
+        Exception.__init__(self)
+        self.message = message
+
+
+class VfbClientException(TechnicalException):
 
     def __init__(self, message):
         Exception.__init__(self)
