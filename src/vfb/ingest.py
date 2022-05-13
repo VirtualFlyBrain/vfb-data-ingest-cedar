@@ -35,9 +35,12 @@ def ingest_data(user, metadata, template_instance, crawling_types):
     if data_obj and type(data_obj).__name__ in crawling_types:
         if isinstance(data_obj, Neuron):
             result = post_neuron(data_obj, user_orcid, get_user_details(user_orcid)["apikey"])
-            download_neuron_image(metadata["image_location"]["@value"])
+            download_neuron_image(metadata["image_location"]["@value"], metadata["dataset_id"]["@value"])
         elif isinstance(data_obj, Dataset):
             result = post_dataset(data_obj, user_orcid, get_user_details(user_orcid)["apikey"])
+    else:
+        log.warning("Skipping ingestion of the template instance {}({}) of user {}".format(
+            template_instance, str(type(data_obj).__name__), user_orcid))
 
     return result
 

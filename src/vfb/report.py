@@ -1,14 +1,18 @@
 import os
 import smtplib
 import logging
+from typing import List
+
 from exception.crawler_exception import CrawlerException
 from vfb.ingest_api_client import get_user_details
+
+REPORT_SUBJECT = "VFB data ingestion report"
+ORCID_ID_PREFIX = "https://orcid.org/"
+CEDAR_SITE = "https://cedar.metadatacenter.org/instances/edit/"
 
 logging.basicConfig()
 logging.root.setLevel(logging.INFO)
 log = logging.getLogger(__name__)
-
-ORCID_ID_PREFIX = "https://orcid.org/"
 
 
 class Report:
@@ -28,31 +32,54 @@ def send_reports(reports: list):
     sender_email = get_email_user()
     password = get_email_password()
 
-    failed_reports = list()
+    user_reports = dict()
     for report in reports:
-        editor = report.editor
-        if not str(editor).startswith(ORCID_ID_PREFIX):
-            editor = ORCID_ID_PREFIX + editor
-        user_info = get_user_details(editor)
+        if report.editor in user_reports:
+            user_reports[report.editor].append(report)
+        else:
+            user_reports[report.editor] = [report]
+
+    failed_reports = list()
+    for user in user_reports:
+        editor_orcid = user
+        if not str(editor_orcid).startswith(ORCID_ID_PREFIX):
+            editor_orcid = ORCID_ID_PREFIX + editor_orcid
+        user_info = get_user_details(editor_orcid)
         if "email" not in user_info:
-            failed_reports.append("User email doesn't exist in the VFB :" + editor)
+            failed_reports.append("User email doesn't exist in the VFB :" + editor_orcid)
         receiver_email = user_info["email"]
-        message = """\
-        Subject: Hi there
-    
-        This message is sent from Python."""
-        send_email(sender_email, password, receiver_email, message)
+        send_email(sender_email, password, receiver_email, generate_report_content(user_reports[user]))
 
     return failed_reports
 
 
-def send_email(sender_email, password, receiver_email, message):
-    subject = "VFB data ingestion report"
-    text = message
+def generate_report_content(user_reports: List[Report]):
+    success_report = ""
+    error_report = ""
+    error_counter = 1
+    success_counter = 1
+    for report in user_reports:
+        if report.error_message:
+            error_report += str(error_counter) + "- Error occurred while processing: " + CEDAR_SITE + \
+                            report.template_instance + ".\n"
+            error_report += "\t Cause: " + report.error_message + "\n\n"
+            error_counter += 1
+        else:
+            success_report += str(success_counter) + "- Template instance crawled: " + CEDAR_SITE + \
+                              report.template_instance + "\n"
+            success_counter += 1
 
-    # Prepare actual message
-    message = """From: %s\nTo: %s\nSubject: %s\n\n%s
-        """ % (sender_email, receiver_email, subject, text)
+    message = ""
+    if error_report:
+        message = """==== Failed Template Instances \n""" + error_report
+    if success_report:
+        message += """==== Successfully Crawled Template Instances \n""" + success_report
+
+    return message
+
+
+def send_email(sender_email, password, receiver_email, message):
+    message = """From: %s\nTo: %s\nSubject: %s\n\n%s""" % (sender_email, receiver_email, REPORT_SUBJECT, message)
     try:
         server = smtplib.SMTP("smtp.gmail.com", 587)
         server.ehlo()

@@ -23,24 +23,21 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S%z"
 MIN_DATE = "2000-01-01T01:01:01-01:00"
 REQUEST_LIMIT = 499
 
-reports = list()
-
 
 def crawl(crawling_types):
+    reports = list()
     templates = get_all_templates()
     for template in templates:
         instances = get_template_instances(template)
-
-        status = True
         for instance in instances:
             instance_data = get_instance_data(instance)
             editor = get_user_orcid(instance_data["oslc:modifiedBy"])
             try:
-                if not db.is_crawled():
+                if not db.is_crawled(instance):
                     result = ingest.ingest_data(editor, instance_data, instance, crawling_types)
                     if result:
                         update_time = dt.strptime(instance_data["pav:lastUpdatedOn"], DATE_FORMAT)
-                        db.update_last_crawling_time(instance, editor, dt.strftime(update_time, DATE_FORMAT))
+                        # db.update_last_crawling_time(instance, editor, dt.strftime(update_time, DATE_FORMAT))
                         reports.append(Report(template, instance, editor))
             except ContentException as err:
                 log.error("Exception occurred while processing instance '{}' of template '{}'.".format(instance, template))
@@ -48,13 +45,8 @@ def crawl(crawling_types):
                 report = Report(template, instance, editor)
                 report.set_error(str(err))
                 reports.append(report)
-                # db.update_last_crawling_time(template, dt.strftime(last_updated_on, DATE_FORMAT))
-                # log.error("Stopping the crawling.")
-                status = False
-                # break
 
-        # db.update_last_crawling_time(template, dt.strftime(last_updated_on, DATE_FORMAT))
-        return status
+    return reports
 
 
 def get_user_orcid(user_id):

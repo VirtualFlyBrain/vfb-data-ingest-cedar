@@ -38,6 +38,7 @@ def post_neuron(data, user_orcid, api_key):
     data_wrapper = dict()
     data_wrapper["neurons"] = [vars(data)]
     # print(json.dumps(vars(data)))
+    log.info("Posting neuron ({}) of user {} to VFB API.".format(str(data.primary_name), user_orcid))
     r = requests.post(POST_NEURON.format(curation_api=os.environ['CURATIONAPI'],
                                          user_orcid=user_orcid,
                                          user_apikey=api_key), data=json.dumps(data_wrapper), headers=headers)
@@ -50,10 +51,10 @@ def post_neuron(data, user_orcid, api_key):
     return r.status_code, r.json()
 
 
-def download_neuron_image(image_url):
+def download_neuron_image(image_url, dataset_name):
     if image_url:
         if "IMAGES_FOLDER_PATH" in os.environ:
-            target_folder = os.getenv("IMAGES_FOLDER_PATH")
+            target_folder = os.path.join(os.getenv("IMAGES_FOLDER_PATH"), dataset_name)
             print("Target Folder: " + str(target_folder))
             if target_folder and not os.path.exists(target_folder):
                 os.makedirs(target_folder)
@@ -74,6 +75,7 @@ def post_dataset(data, user_orcid, api_key):
     data_content.pop('publication', None)
     data_content.pop('source_data', None)
     print(json.dumps(data_content))
+    log.info("Posting dataset ({}) of user {} to VFB API.".format(str(data.short_name), user_orcid))
     r = requests.post(POST_DATASET.format(curation_api=os.environ['CURATIONAPI'],
                                               user_orcid=user_orcid,
                                               user_apikey=api_key), data=json.dumps(data_content), headers=headers)
