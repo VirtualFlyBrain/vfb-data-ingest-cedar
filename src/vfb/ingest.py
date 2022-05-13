@@ -60,6 +60,10 @@ def parse_template_data(metadata, template_instance):
         if isinstance(data_obj.part_of, str):
             # part_of is list by default, but ui is only providing single value (gender) now
             data_obj.set_part_of([data_obj.part_of])
+        if "driver_line" in metadata:
+            # driverline entities are not in the kb so save to the comments for now
+            data_obj.set_classification_comment(str(get_metadata_value(metadata["driver_line"])))
+            data_obj.set_driver_line([])
         parse_imaging_type(data_obj, template_instance)
     elif "licence" in metadata:
         data_obj = Dataset("", metadata["short_name"]["@value"], metadata["title"]["@value"])

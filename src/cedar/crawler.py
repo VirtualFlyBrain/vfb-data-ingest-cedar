@@ -41,9 +41,9 @@ def crawl(crawling_types):
                         reports.append(Report(template, instance, editor))
             except ContentException as err:
                 log.error("Exception occurred while processing instance '{}' of template '{}'.".format(instance, template))
-                log.error("Exception occurred during crawling: " + str(err))
+                # log.error("Exception occurred during crawling: " + err.message)
                 report = Report(template, instance, editor)
-                report.set_error(str(err))
+                report.set_error(err.message)
                 reports.append(report)
 
     return reports
