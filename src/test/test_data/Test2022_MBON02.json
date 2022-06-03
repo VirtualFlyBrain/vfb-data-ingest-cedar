@@ -61,15 +61,15 @@
     "rdfs:label": "confocal microscopy"
   },
   "driver_line": [
-    {
-      "@id": "http://virtualflybrain.org/reports/VFBexp_FBtp0099466FBtp0099529",
-      "rdfs:label": "P{R22C12-GAL4.DBD} ∩ PBac{R21D02-p65.AD} expression pattern"
-    }
+    {}
   ],
   "dataset_id": {
     "@value": "Zoglu2020"
   },
-  "template_id": {},
+  "template_id": {
+    "@id": "http://virtualflybrain.org/reports/VFB_00101567",
+    "rdfs:label": "JRC2018Unisex"
+  },
   "part of": {
     "@id": "http://purl.obolibrary.org/obo/FBbt_00007004",
     "rdfs:label": "male organism"
@@ -94,9 +94,38 @@
     }
   ],
   "classification_comment": {
-    "@value": null
+    "@value": "comment1"
   },
   "filename": {
     "@value": "MBON02"
+  },
+  "image_location": {
+    "@value": ""
+  },
+  "publish": [
+    {
+      "@value": "publish"
+    }
+  ],
+  "alt_driver": {
+    "@value": null
+  },
+  "split_combo": [
+    {
+    }
+  ],
+  "EP_fragment": {
+    "@value": "No"
+  },
+  "single_neuron": {
+    "@value": "No"
+  },
+  "hemidriver_1": {
+    "@id": "http://flybase.org/reports/FBti0001774",
+    "rdfs:label": "P{A92}bab1[A30]"
+  },
+  "hemidriver_2": {
+    "@id": "http://flybase.org/reports/FBti0001776",
+    "rdfs:label": "P{A92}bab1[A30]"
   }
 }

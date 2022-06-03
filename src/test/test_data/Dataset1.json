@@ -1,0 +1,77 @@
+{
+  "@context": {
+    "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "pav": "http://purl.org/pav/",
+    "schema": "http://schema.org/",
+    "oslc": "http://open-services.net/ns/core#",
+    "skos": "http://www.w3.org/2004/02/skos/core#",
+    "rdfs:label": {
+      "@type": "xsd:string"
+    },
+    "schema:isBasedOn": {
+      "@type": "@id"
+    },
+    "schema:name": {
+      "@type": "xsd:string"
+    },
+    "schema:description": {
+      "@type": "xsd:string"
+    },
+    "pav:derivedFrom": {
+      "@type": "@id"
+    },
+    "pav:createdOn": {
+      "@type": "xsd:dateTime"
+    },
+    "pav:createdBy": {
+      "@type": "@id"
+    },
+    "pav:lastUpdatedOn": {
+      "@type": "xsd:dateTime"
+    },
+    "oslc:modifiedBy": {
+      "@type": "@id"
+    },
+    "skos:notation": {
+      "@type": "xsd:string"
+    },
+    "licence": "https://schema.metadatacenter.org/properties/c9f1f273-0e73-4985-82fe-6575a8e88988",
+    "publication": "https://schema.metadatacenter.org/properties/f9d9ef5d-e8ee-4e62-bbad-19181b348380",
+    "embargo_date": "https://schema.metadatacenter.org/properties/dd5aa9fb-e4aa-47dd-ba10-dafa690c5d11",
+    "description": "https://schema.metadatacenter.org/properties/b9d98518-966f-4d6a-a8da-8287213dd66c",
+    "title": "https://schema.metadatacenter.org/properties/d1a58782-67a2-4890-bead-062912ebdc2b",
+    "projectid": "https://schema.metadatacenter.org/properties/91fe919d-4dbc-4dd9-b6d3-eadf42111e51",
+    "short_name": "https://schema.metadatacenter.org/properties/0fb0dbdf-ef6a-40f5-9adb-d7c440c55b83"
+  },
+  "licence": {
+    "@id": "http://www.ebi.ac.uk/swo/license/SWO_1000065",
+    "rdfs:label": "CC BY 4.0"
+  },
+  "publication": {
+    "@value": "https://doi.org/10.1093/mind/LIX.236.433"
+  },
+  "embargo_date": {
+    "@value": null
+  },
+  "description": {
+    "@value": "ABCD Dataset1 description"
+  },
+  "title": {
+    "@value": "ABCD Dataset1"
+  },
+  "projectid": {
+    "@value": "ABCD"
+  },
+  "short_name": {
+    "@value": "ABCD_ds1"
+  },
+  "schema:isBasedOn": "https://repo.metadatacenter.org/templates/24d95aea-88c2-477f-855c-42c1a0051289",
+  "schema:name": "Virtual Fly Brain Dataset metadata",
+  "schema:description": "Create a new VFB dataset",
+  "pav:createdOn": "2022-04-20T09:17:09-07:00",
+  "pav:createdBy": "https://metadatacenter.org/users/6d8029e2-68a3-4230-8393-cc457bf29d97",
+  "pav:lastUpdatedOn": "2022-04-20T09:17:09-07:00",
+  "oslc:modifiedBy": "https://metadatacenter.org/users/6d8029e2-68a3-4230-8393-cc457bf29d97",
+  "@id": "https://repo.metadatacenter.org/template-instances/653f1879-3f64-4a67-a2e2-da5269e0c746"
+}

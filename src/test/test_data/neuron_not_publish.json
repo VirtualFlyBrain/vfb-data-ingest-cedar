@@ -50,15 +50,15 @@
     "filename": "https://schema.metadatacenter.org/properties/50c5d4d5-2d8a-49a8-a4d5-60561fac27e3"
   },
   "primary_name": {
-    "@value": "LLPC3"
+    "@value": "MBON02"
   },
   "classification": {
-    "@id": "http://purl.obolibrary.org/obo/FBbt_00003881",
-    "rdfs:label": "lobula-lobula plate columnar neuron LLPC"
+    "@id": "http://purl.obolibrary.org/obo/FBbt_00111012",
+    "rdfs:label": "mushroom body output neuron 2"
   },
   "imaging_type": {
-    "@id": "http://purl.obolibrary.org/obo/FBbi_00050000",
-    "rdfs:label": "focussed ion beam scanning electron microscopy (FIB-SEM)"
+    "@id": "http://purl.obolibrary.org/obo/FBbi_00000251",
+    "rdfs:label": "confocal microscopy"
   },
   "driver_line": [
     {}
@@ -67,25 +67,25 @@
     "@value": "Zoglu2020"
   },
   "template_id": {
-    "@id": "http://virtualflybrain.org/reports/VFB_00101384",
-    "rdfs:label": "JRC_FlyEM_Hemibrain"
+    "@id": "http://virtualflybrain.org/reports/VFB_00101567",
+    "rdfs:label": "JRC2018Unisex"
   },
   "part of": {
-    "@id": "http://purl.obolibrary.org/obo/FBbt_00007011",
-    "rdfs:label": "female organism"
+    "@id": "http://purl.obolibrary.org/obo/FBbt_00007004",
+    "rdfs:label": "male organism"
   },
-  "has soma location": {
-    "@id": "http://purl.obolibrary.org/obo/FBbt_00111152",
-    "rdfs:label": "cell body rind of adult optic lobe"
-  },
+  "has soma location": {},
   "has synaptic terminal in": [
     {
-      "@id": "http://purl.obolibrary.org/obo/FBbt_00003852",
-      "rdfs:label": "lobula"
+      "@id": "http://purl.obolibrary.org/obo/FBbt_00013694",
+      "rdfs:label": "adult mushroom body beta'-lobe"
     },
     {
-      "@id": "http://purl.obolibrary.org/obo/FBbt_00003885",
-      "rdfs:label": "lobula plate"
+      "@id": "http://purl.obolibrary.org/obo/FBbt_00110658",
+      "rdfs:label": "adult mushroom body beta-lobe"
+    },
+    {
+      "@id": "http://purl.obolibrary.org/obo/FBbt_00007145"
     }
   ],
   "alternative_names": [
@@ -94,36 +94,17 @@
     }
   ],
   "classification_comment": {
-    "@value": ""
+    "@value": "comment1"
   },
   "filename": {
-    "@value": "1807191501"
+    "@value": "MBON02"
   },
   "image_location": {
-    "@value": "https://raw.githubusercontent.com/VirtualFlyBrain/vfb-data-ingest-cedar/main/src/test/test_data/Exception_data.json"
+    "@value": ""
   },
   "publish": [
     {
-      "@value": "publish"
+      "@value": null
     }
-  ],
-  "alt_driver": {
-    "@value": null
-  },
-  "split_combo": [
-    {
-      "@id": "http://virtualflybrain.org/reports/VFBexp_FBti0001774FBti0001776",
-      "rdfs:label": "P{A92}bab1[A30] ∩ P{w[aRsLTR]}V3 expression pattern"
-    }
-  ],
-  "EP_fragment": {
-    "@value": "Yes"
-  },
-  "single_neuron": {
-    "@value": "No"
-  },
-  "hemidriver_1": {
-  },
-  "hemidriver_2": {
-  }
+  ]
 }

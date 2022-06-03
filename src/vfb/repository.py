@@ -1,5 +1,5 @@
 import os
-from datetime import datetime as dt
+from exception.crawler_exception import CrawlerException
 from neo4jrestclient.client import GraphDatabase
 from vfb_neo4j.vfb.uk.ac.ebi.vfb.neo4j.neo4j_tools import neo4j_connect
 from vfb_neo4j.vfb.uk.ac.ebi.vfb.neo4j.KB_tools import KB_pattern_writer
@@ -25,6 +25,9 @@ class VFBKB():
             self.password = os.getenv('KBpassword')
             try:
                 if self.db_client == "vfb":
+                    print(self.kb)
+                    print(self.user)
+                    print(self.password)
                     self.db = neo4j_connect(self.kb, self.user, self.password)
                     self.kb_owl_pattern_writer = KB_pattern_writer(self.kb, self.user, self.password)
                     self.kb_owl_edge_writer = kb_owl_edge_writer(self.kb, self.user, self.password)
@@ -79,22 +82,21 @@ class VFBKB():
                 x = self.parse_neo4j_default_client_data(self.db.query(q,data_contents=True))
             return x
         else:
-            raise ValueError("Database not initialised!")
+            raise CrawlerException("Database not initialised!")
 
-    def get_last_crawling_time(self, template_id):
-        q = "MATCH (n:CrawlerLog {iri:'%s'}" % template_id
-        q = q + ") RETURN n.lastCrawledOn as lastCrawledOn"
-
-        results = self.query(q=q)
-        if len(results) == 1:
-            return results[0]['lastCrawledOn']
-        return "2000-01-01T01:01:01-01:00"
-
-    def update_last_crawling_time(self, template_id, last_crawled_on):
-        q = "MERGE (n:CrawlerLog {{iri:'{template_id}', lastCrawledOn: '{lastCrawledOn}'}})"\
-            .format(template_id=template_id, lastCrawledOn=last_crawled_on)
+    def is_crawled(self, template_instance_id):
+        q = "MATCH (n:CrawlerLog {iri:'%s'}" % template_instance_id
+        q = q + ") RETURN n"
 
         results = self.query(q=q)
+        if len(results) == 0:
+            return False
+        return True
+
+    def update_last_crawling_time(self, template_instance_id, editor, last_crawled_on):
+        q = "MERGE (n:CrawlerLog {{iri:'{template_id}', owner:'{owner}' lastCrawledOn: '{lastCrawledOn}'}})"\
+            .format(template_id=template_instance_id, owner=editor, lastCrawledOn=last_crawled_on)
+        self.query(q=q)
 
 
 db = VFBKB()

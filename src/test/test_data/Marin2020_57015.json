@@ -60,9 +60,6 @@
     "@id": "http://purl.obolibrary.org/obo/FBbi_00000258",
     "rdfs:label": "transmission electron microscopy (TEM)"
   },
-  "driver_line": [
-    {}
-  ],
   "dataset_id": {
     "@value": "Zoglu2020"
   },
@@ -101,5 +98,34 @@
   },
   "filename": {
     "@value": "57015"
+  },
+  "image_location": {
+    "@value": "https://raw.githubusercontent.com/VirtualFlyBrain/vfb-data-ingest-cedar/main/src/test/test_data/Exception_data.json"
+  },
+  "publish": [
+    {
+      "@value": "publish"
+    }
+  ],
+  "alt_driver": {
+    "@value": null
+  },
+  "split_combo": [
+    {
+    }
+  ],
+  "EP_fragment": {
+    "@value": "Yes"
+  },
+  "single_neuron": {
+    "@value": "Yes"
+  },
+  "hemidriver_1": {
+    "@id": "http://flybase.org/reports/FBti0001774",
+    "rdfs:label": "P{A92}bab1[A30]"
+  },
+  "hemidriver_2": {
+    "@id": "http://flybase.org/reports/FBti0001776",
+    "rdfs:label": "P{A92}bab1[A30]"
   }
 }

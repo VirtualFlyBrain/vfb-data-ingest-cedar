@@ -91,5 +91,29 @@
   },
   "filename": {
     "@value": null
+  },
+  "publish": [
+    {
+      "@value": "publish"
+    }
+  ],
+  "alt_driver": {
+    "@value": null
+  },
+  "split_combo": [
+    {
+      "@id": "http://virtualflybrain.org/reports/VFBexp_FBti0001774FBti0001776",
+      "rdfs:label": "P{A92}bab1[A30] ∩ P{w[aRsLTR]}V3 expression pattern"
+    }
+  ],
+  "EP_fragment": {
+    "@value": "Yes"
+  },
+  "single_neuron": {
+    "@value": "No"
+  },
+  "hemidriver_1": {
+  },
+  "hemidriver_2": {
   }
 }
