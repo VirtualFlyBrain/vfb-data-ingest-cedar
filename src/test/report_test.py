@@ -27,20 +27,21 @@ class ReportingTest(unittest.TestCase):
         content = generate_report_content(reports)
         self.assertTrue(content)
         expected_content = ("==== Failed Template Instances \n" 
-                            "1- Error occurred while processing: instance5.\n"
+                            "1- Error occurred while processing: https://cedar.metadatacenter.org/instances/edit/instance5.\n"
                             "	 Cause: Error message\n"
                             "\n"
-                            "2- Error occurred while processing: instance6.\n"
+                            "2- Error occurred while processing: https://cedar.metadatacenter.org/instances/edit/instance6.\n"
                             "	 Cause: Error message \n"
                             " multi \n"
                             " line\n"
                             "\n"
                             "==== Successfully Crawled Template Instances \n"
-                            "1- Template instance crawled: instance1\n"
-                            "2- Template instance crawled: instance2\n"
-                            "3- Template instance crawled: instance3\n"
-                            "4- Template instance crawled: instance4\n"
+                            "1- Template instance crawled: https://cedar.metadatacenter.org/instances/edit/instance1\n"
+                            "2- Template instance crawled: https://cedar.metadatacenter.org/instances/edit/instance2\n"
+                            "3- Template instance crawled: https://cedar.metadatacenter.org/instances/edit/instance3\n"
+                            "4- Template instance crawled: https://cedar.metadatacenter.org/instances/edit/instance4\n"
                             "")
+
         self.assertEqual(expected_content, content)
 
 

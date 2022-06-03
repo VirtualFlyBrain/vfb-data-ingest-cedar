@@ -106,5 +106,26 @@
     {
       "@value": "publish"
     }
-  ]
+  ],
+  "alt_driver": {
+    "@value": null
+  },
+  "split_combo": [
+    {
+    }
+  ],
+  "EP_fragment": {
+    "@value": "No"
+  },
+  "single_neuron": {
+    "@value": "No"
+  },
+  "hemidriver_1": {
+    "@id": "http://flybase.org/reports/FBti0001774",
+    "rdfs:label": "P{A92}bab1[A30]"
+  },
+  "hemidriver_2": {
+    "@id": "http://flybase.org/reports/FBti0001776",
+    "rdfs:label": "P{A92}bab1[A30]"
+  }
 }

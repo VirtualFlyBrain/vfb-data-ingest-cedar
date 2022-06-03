@@ -12,6 +12,9 @@ log = logging.getLogger(__name__)
 GET_USER_DETAILS = "{curation_api}/user/admin/?user_orcid={user_orcid}&admin_orcid={admin_orcid}&admin_apikey={admin_apikey}"
 POST_NEURON = "{curation_api}/neuron/?orcid={user_orcid}&apikey={user_apikey}"
 POST_DATASET = "{curation_api}/dataset/?orcid={user_orcid}&apikey={user_apikey}"
+POST_SPLIT = "{curation_api}/split/?orcid={user_orcid}&apikey={user_apikey}"
+POST_EP_SPLIT = "{curation_api}/ep_split/?orcid={user_orcid}&apikey={user_apikey}"
+POST_EP_SPLIT_FLP_OUT = "{curation_api}/ep_split_flp_out/?orcid={user_orcid}&apikey={user_apikey}"
 
 SUCCESS = 201
 
@@ -37,7 +40,7 @@ def post_neuron(data, user_orcid, api_key):
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
     data_wrapper = dict()
     data_wrapper["neurons"] = [vars(data)]
-    # print(json.dumps(vars(data)))
+    print(json.dumps(vars(data)))
     log.info("Posting neuron ({}) of user {} to VFB API.".format(str(data.primary_name), user_orcid))
     r = requests.post(POST_NEURON.format(curation_api=os.environ['CURATIONAPI'],
                                          user_orcid=user_orcid,
@@ -48,7 +51,7 @@ def post_neuron(data, user_orcid, api_key):
         log.error("Internal cause of neuron post error is: " + "\n" + r.text)
         raise ContentException("Internal cause of neuron post error is: " + "\n" + r.text)
 
-    return r.status_code, r.json()
+    return r.json()
 
 
 def download_neuron_image(image_url, dataset_name):
@@ -85,4 +88,56 @@ def post_dataset(data, user_orcid, api_key):
         log.error("Internal cause of dataset post error is: " + "\n" + r.text)
         raise ContentException("Internal cause of dataset post error is: " + "\n" + r.text)
 
-    return r.status_code, r.json()
+    return r.json()
+
+
+def post_split(data, user_orcid, api_key):
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    # print(json.dumps(vars(data)))
+    log.info("Posting split ({}) for user {} operation to VFB API.".format(str(data), user_orcid))
+    r = requests.post(POST_SPLIT.format(curation_api=os.environ['CURATIONAPI'],
+                                        user_orcid=user_orcid,
+                                        user_apikey=api_key), data=json.dumps(vars(data)), headers=headers)
+
+    if r.status_code != SUCCESS:
+        log.error("Error occurred while posting split of user {} data {}".format(user_orcid, str(data)))
+        log.error("Internal cause of split post error is: " + "\n" + r.text)
+        raise ContentException("Internal cause of split post error is: " + "\n" + r.text)
+
+    return r.json()
+
+
+def post_ep_split(data, user_orcid, api_key):
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    data_wrapper = dict()
+    data_wrapper["split_drivers"] = [vars(data)]
+    # print(json.dumps(vars(data)))
+    log.info("Posting EP/Split ({}) of user {} to VFB API.".format(str(data.primary_name), user_orcid))
+    r = requests.post(POST_EP_SPLIT.format(curation_api=os.environ['CURATIONAPI'],
+                                           user_orcid=user_orcid,
+                                           user_apikey=api_key), data=json.dumps(data_wrapper), headers=headers)
+
+    if r.status_code != SUCCESS:
+        log.error("Error occurred while posting EP/Split of user {} data {}".format(user_orcid, str(data)))
+        log.error("Internal cause of EP/Split post error is: " + "\n" + r.text)
+        raise ContentException("Internal cause of EP/Split post error is: " + "\n" + r.text)
+
+    return r.json()
+
+
+def post_ep_split_flp_out(data, user_orcid, api_key):
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    data_wrapper = dict()
+    data_wrapper["split_drivers"] = [vars(data)]
+    print(json.dumps(vars(data)))
+    log.info("Posting EP/Split Flp-Out ({}) of user {} to VFB API.".format(str(data.primary_name), user_orcid))
+    r = requests.post(POST_EP_SPLIT_FLP_OUT.format(curation_api=os.environ['CURATIONAPI'],
+                                                   user_orcid=user_orcid,
+                                                   user_apikey=api_key), data=json.dumps(data_wrapper), headers=headers)
+
+    if r.status_code != SUCCESS:
+        log.error("Error occurred while posting EP/Split Flp-Out of user {} data {}".format(user_orcid, str(data)))
+        log.error("Internal cause of EP/Split Flp-Out post error is: " + "\n" + r.text)
+        raise ContentException("Internal cause of EP/Split Flp-Out post error is: " + "\n" + r.text)
+
+    return r.json()

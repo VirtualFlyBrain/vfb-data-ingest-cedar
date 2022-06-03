@@ -2,10 +2,15 @@ import os
 import unittest
 import json
 from vfb.ingest_api_client import get_user_details, post_neuron, post_dataset, download_neuron_image
-from vfb.ingest import parse_template_data
+from vfb.ingest import parse_template_data, ingest_data
 
-from exception.crawler_exception import CrawlerException
+from exception.crawler_exception import CrawlerException, ContentException
 
+TEST_INSTANCE = "test_template_instance"
+
+TEST_USER = "https://orcid.org/0000-0002-7356-1779"
+
+CRAWLING_TYPES = ["Dataset", "Neuron", "Split", "SplitDriver"]
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 NEURON_SAMPLE_DATA_1 = os.path.join(current_dir, "./test_data/Baker2020_WED-PN1.json")
@@ -45,14 +50,11 @@ class IngestApiTest(unittest.TestCase):
             self.assertEqual("Error occurred while getting vfb user not_existing_id", err.message)
 
     def test_post_neuron(self):
-        vfb_data = parse_template_data(read_json(NEURON_SAMPLE_DATA_1), "test_template_instance")
-        # post_neuron(vfb_data, "https://orcid.org/0000-0002-3315-2794",
-        #             get_user_details("https://orcid.org/0000-0002-3315-2794")["apikey"])
-        status_code, response_data = post_neuron(vfb_data, "https://orcid.org/0000-0002-7356-1779", "xyz")
+        results = ingest_data(TEST_USER, read_json(NEURON_SAMPLE_DATA_1), TEST_INSTANCE, CRAWLING_TYPES)
+        self.assertEqual(1, len(results))
 
-        self.assertEqual(201, status_code)
-        self.assertEqual(1, len(response_data["neurons"]))
-        written_data = response_data["neurons"][0]
+        written_data = results[0]["neurons"][0]
+        self.assertEqual(1, len(results[0]["neurons"]))
         self.assertEqual("WED-PN1", written_data["primary_name"])
         self.assertEqual("http://purl.obolibrary.org/obo/FBbt_00049454", written_data["classification"])
         self.assertEqual("confocal microscopy", written_data["imaging_type"])
@@ -67,43 +69,61 @@ class IngestApiTest(unittest.TestCase):
         self.assertEqual("IPS_pr01", written_data["alternative_names"][0])
         self.assertEqual("", written_data["classification_comment"])
         self.assertEqual(None, written_data["filename"])
+        self.assertEqual("", written_data["comment"])
 
     def test_post_neuron2(self):
-        vfb_data = parse_template_data(read_json(NEURON_SAMPLE_DATA_2), "test_template_instance")
-        status_code, response_data = post_neuron(vfb_data, "https://orcid.org/0000-0002-7356-1779", "xyz")
+        results = ingest_data(TEST_USER, read_json(NEURON_SAMPLE_DATA_2), TEST_INSTANCE, CRAWLING_TYPES)
 
-        self.assertEqual(201, status_code)
-        self.assertEqual(1, len(response_data["neurons"]))
-        written_data = response_data["neurons"][0]
-        self.assertEqual("Multiglomerular mALT lvPN VC5+", written_data["primary_name"])
-        self.assertEqual("http://purl.obolibrary.org/obo/FBbt_00049762", written_data["classification"])
-        self.assertEqual("transmission electron microscopy (TEM)", written_data["imaging_type"])
-        self.assertEqual(0, len(written_data["driver_line"]))
-        self.assertEqual("http://virtualflybrain.org/reports/Zoglu2020", written_data["datasetid"])
-        self.assertEqual("VFB_00101567", written_data["template_id"])
-        self.assertEqual(1, len(written_data["part_of"]))
-        self.assertEqual("FBbt_00007011", written_data["part_of"][0])
-        self.assertEqual(2, len(written_data["input_neuropils"]))
-        self.assertTrue("FBbt_00110029" in written_data["input_neuropils"])
-        self.assertTrue("FBbt_00007053" in written_data["input_neuropils"])
-        self.assertEqual(2, len(written_data["alternative_names"]))
-        self.assertEqual("VC5+ lvPN2#1", written_data["alternative_names"][0])
-        self.assertEqual("Multiglomerular mALT lvPN#R18", written_data["alternative_names"][1])
-        self.assertEqual("VC5 renamed to VM6", written_data["classification_comment"])
-        self.assertEqual("57015", written_data["filename"])
+        self.assertEqual(2, len(results))
+        split_result = results[0]
+        self.assertEqual("http://virtualflybrain.org/reports/VFBexp_FBti0001774FBti0001776", split_result["iri"])
+        self.assertEqual("VFBexp_FBti0001774FBti0001776", split_result["short_form"])
+        self.assertEqual("P{A92}bab1[A30] ∩ P{w[aRsLTR]}V3 expression pattern", split_result["label"])
+        self.assertEqual(["The sum of all cells at the intersection between the expression patterns of P{A92}bab1[A30] and P{w[aRsLTR]}V3."], split_result["description"])
+        self.assertEqual([], split_result["synonyms"])
+        self.assertEqual([], split_result["xrefs"])
+
+        neuron_data = results[1]["neurons"][0]
+        self.assertEqual(1, len(results[1]["neurons"]))
+        self.assertEqual("Multiglomerular mALT lvPN VC5+", neuron_data["primary_name"])
+        self.assertEqual("http://purl.obolibrary.org/obo/FBbt_00049762", neuron_data["classification"])
+        self.assertEqual("transmission electron microscopy (TEM)", neuron_data["imaging_type"])
+        self.assertEqual(1, len(neuron_data["driver_line"]))
+        self.assertEqual("VFBexp_FBti0001774FBti0001776", neuron_data["driver_line"][0])
+        self.assertEqual("http://virtualflybrain.org/reports/Zoglu2020", neuron_data["datasetid"])
+        self.assertEqual("VFB_00101567", neuron_data["template_id"])
+        self.assertEqual(1, len(neuron_data["part_of"]))
+        self.assertEqual("FBbt_00007011", neuron_data["part_of"][0])
+        self.assertEqual(2, len(neuron_data["input_neuropils"]))
+        self.assertTrue("FBbt_00110029" in neuron_data["input_neuropils"])
+        self.assertTrue("FBbt_00007053" in neuron_data["input_neuropils"])
+        self.assertEqual(2, len(neuron_data["alternative_names"]))
+        self.assertEqual("VC5+ lvPN2#1", neuron_data["alternative_names"][0])
+        self.assertEqual("Multiglomerular mALT lvPN#R18", neuron_data["alternative_names"][1])
+        self.assertEqual("VC5 renamed to VM6", neuron_data["classification_comment"])
+        self.assertEqual("57015", neuron_data["filename"])
+        self.assertEqual("", neuron_data["comment"])
 
     def test_post_neuron3(self):
-        vfb_data = parse_template_data(read_json(NEURON_SAMPLE_DATA_3), "test_template_instance")
-        status_code, response_data = post_neuron(vfb_data, "https://orcid.org/0000-0002-7356-1779", "xyz")
+        results = ingest_data(TEST_USER, read_json(NEURON_SAMPLE_DATA_3), TEST_INSTANCE, CRAWLING_TYPES)
 
-        self.assertEqual(201, status_code)
-        self.assertEqual(1, len(response_data["neurons"]))
-        written_data = response_data["neurons"][0]
+        self.assertEqual(2, len(results))
+        split_result = results[0]
+        self.assertEqual("http://virtualflybrain.org/reports/VFBexp_FBti0001774FBti0001776", split_result["iri"])
+        self.assertEqual("VFBexp_FBti0001774FBti0001776", split_result["short_form"])
+        self.assertEqual("P{A92}bab1[A30] ∩ P{w[aRsLTR]}V3 expression pattern", split_result["label"])
+        self.assertEqual(["The sum of all cells at the intersection between the expression patterns of P{A92}bab1[A30] and P{w[aRsLTR]}V3."], split_result["description"])
+        self.assertEqual([], split_result["synonyms"])
+        self.assertEqual([], split_result["xrefs"])
+
+        written_data = results[1]["neurons"][0]
+        self.assertEqual(1, len(results[1]["neurons"]))
+
         self.assertEqual("MBON02", written_data["primary_name"])
-        self.assertEqual("http://purl.obolibrary.org/obo/FBbt_00111012", written_data["classification"])
+        self.assertEqual("http://virtualflybrain.org/reports/VFBexp_FBti0001774FBti0001776", written_data["classification"])
         self.assertEqual("confocal microscopy", written_data["imaging_type"])
-        # self.assertEqual(1, len(written_data["driver_line"]))
-        # self.assertEqual("VFBexp_FBtp0099466FBtp0099529", written_data["driver_line"][0])
+        self.assertEqual(1, len(written_data["driver_line"]))
+        self.assertEqual("VFBexp_FBti0001774FBti0001776", written_data["driver_line"][0])
         self.assertEqual("http://virtualflybrain.org/reports/Zoglu2020", written_data["datasetid"])
         self.assertEqual("VFB_00101567", written_data["template_id"])
         self.assertEqual(1, len(written_data["part_of"]))
@@ -116,16 +136,18 @@ class IngestApiTest(unittest.TestCase):
         self.assertFalse(written_data["alternative_names"])
         self.assertEqual("comment1", written_data["classification_comment"])
         self.assertEqual("MBON02", written_data["filename"])
+        self.assertEqual("", written_data["comment"])
 
     def test_post_neuron4(self):
-        vfb_data = parse_template_data(read_json(NEURON_SAMPLE_DATA_4), "test_template_instance")
-        status_code, response_data = post_neuron(vfb_data, "https://orcid.org/0000-0002-7356-1779", "xyz")
+        results = ingest_data(TEST_USER, read_json(NEURON_SAMPLE_DATA_4), TEST_INSTANCE, CRAWLING_TYPES)
+        self.assertEqual(1, len(results))
 
-        self.assertEqual(201, status_code)
-        self.assertEqual(1, len(response_data["neurons"]))
-        written_data = response_data["neurons"][0]
+        written_data = results[0]["neurons"][0]
+        self.assertEqual(1, len(results[0]["neurons"]))
+        # self.assertEqual(1, len(response_data["neurons"]))
+        # written_data = response_data["neurons"][0]
         self.assertEqual("LLPC3", written_data["primary_name"])
-        self.assertEqual("http://purl.obolibrary.org/obo/FBbt_00003881", written_data["classification"])
+        self.assertEqual("http://purl.obolibrary.org/obo/fbbt/vfb/VFBext_0000004", written_data["classification"])
         self.assertEqual("serial block face SEM (SBFSEM)", written_data["imaging_type"])
         self.assertEqual(0, len(written_data["driver_line"]))
         self.assertEqual("http://virtualflybrain.org/reports/Zoglu2020", written_data["datasetid"])
@@ -138,17 +160,19 @@ class IngestApiTest(unittest.TestCase):
         self.assertEqual(None, written_data["alternative_names"])
         self.assertEqual("", written_data["classification_comment"])
         self.assertEqual("1807191501", written_data["filename"])
+        self.assertEqual("", written_data["comment"])
 
     def test_post_neuron_exception(self):
         vfb_data = parse_template_data(read_json(NEURON_EXCEPTION_DATA), "test_template_instance")
+        print(vfb_data)
         print(vars(vfb_data))
         try:
             status_code, response_data = post_neuron(vfb_data, "https://orcid.org/0000-0002-7356-1779", "xyz")
             print(status_code)
             print(response_data)
             self.fail("En exception should occur.")
-        except CrawlerException as err:
-            self.assertTrue(str(err.message).startswith("Error occurred while posting neurons of user https://orcid.org/0000-0002-7356-1779"))
+        except ContentException as err:
+            self.assertTrue(str(err.message).startswith("Internal cause of neuron post error is"))
 
     def test_post_neuron_continuous_exception(self):
         # first attempt
@@ -157,8 +181,8 @@ class IngestApiTest(unittest.TestCase):
         try:
             post_neuron(vfb_data, "https://orcid.org/0000-0002-7356-1779", "xyz")
             self.fail("En exception should occur.")
-        except CrawlerException as err:
-            self.assertTrue(str(err.message).startswith("Error occurred while posting neurons of user https://orcid.org/0000-0002-7356-1779"))
+        except ContentException as err:
+            self.assertTrue(str(err.message).startswith("Internal cause of neuron post error is:"))
 
         # second attempt
         vfb_data = parse_template_data(read_json(NEURON_EXCEPTION_DATA), "test_template_instance")
@@ -166,15 +190,13 @@ class IngestApiTest(unittest.TestCase):
         try:
             post_neuron(vfb_data, "https://orcid.org/0000-0002-7356-1779", "xyz")
             self.fail("En exception should occur.")
-        except CrawlerException as err:
-            self.assertTrue(str(err.message).startswith(
-                "Error occurred while posting neurons of user https://orcid.org/0000-0002-7356-1779"))
+        except ContentException as err:
+            self.assertTrue(str(err.message).startswith("Internal cause of neuron post error is:"))
 
     def test_post_dataset(self):
         vfb_data = parse_template_data(read_json(DATASET_1), "test_template_instance")
-        status_code, response_data = post_dataset(vfb_data, "https://orcid.org/0000-0002-7356-1779", "xyz")
+        response_data = post_dataset(vfb_data, "https://orcid.org/0000-0002-7356-1779", "xyz")
 
-        self.assertEqual(201, status_code)
         self.assertTrue(response_data)
         self.assertEqual("ABCD_ds1", response_data)
 
@@ -184,13 +206,13 @@ class IngestApiTest(unittest.TestCase):
 
         os.environ["IMAGES_FOLDER_PATH"] = str(test_folder)
         print(os.getenv("IMAGES_FOLDER_PATH"))
-        expected_file = os.path.join(test_folder, "Exception_data.json")
+        expected_file = os.path.join(test_folder, "test_dataset", "Exception_data.json")
         print(str(expected_file))
         if os.path.exists(expected_file):
             os.remove(expected_file)
 
         self.assertFalse(os.path.isfile(expected_file))
-        download_neuron_image(test_url)
+        download_neuron_image(test_url, "test_dataset")
         self.assertTrue(os.path.isfile(expected_file))
 
 

@@ -60,9 +60,6 @@
     "@id": "http://purl.obolibrary.org/obo/FBbi_00000251",
     "rdfs:label": "confocal microscopy"
   },
-  "driver_line": [
-    {}
-  ],
   "dataset_id": {
     "@value": "Zoglu2020"
   },
@@ -99,5 +96,24 @@
     {
       "@value": "publish"
     }
-  ]
+  ],
+  "alt_driver": {
+    "@value": null
+  },
+  "split_combo": [
+    {
+      "@id": "http://virtualflybrain.org/reports/VFBexp_FBti0205553FBti0205557",
+      "rdfs:label": "Mi{Trojan-GAL4DBD.0}Dbx[MI05316-TG4DBD.0] ∩ Mi{Trojan-p65AD.0}ey[MI08729-Tp65AD.0] expression pattern"
+    }
+  ],
+  "EP_fragment": {
+    "@value": "Yes"
+  },
+  "single_neuron": {
+    "@value": "Yes"
+  },
+  "hemidriver_1": {
+  },
+  "hemidriver_2": {
+  }
 }
