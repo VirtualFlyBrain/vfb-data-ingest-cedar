@@ -32,23 +32,24 @@ def ingest_data(user_orcid, metadata, template_instance, crawling_types):
 
     if not str(user_orcid).startswith(ORCID_ID_PREFIX):
         user_orcid = ORCID_ID_PREFIX + user_orcid
-    template_conf = get_template_config(metadata)
     data_obj = parse_template_data(metadata, template_instance)
 
     results = []
-    if isinstance(data_obj, list):
-        # single template may require to ingest multiple objects such as Split and Neuron
-        sorted_data_obj = sort_by_ingestion_order(data_obj)
-        created_split = None
-        for data in sorted_data_obj:
-            if created_split and (isinstance(data, Neuron) or isinstance(data, SplitDriver)):
-                data.set_driver_line([str(created_split)])
-            response = ingest_data_obj(user_orcid, metadata, template_instance, crawling_types, data, template_conf)
-            if isinstance(data, Split):
-                created_split = response["short_form"]
-            results.append(response)
-    else:
-        results.append(ingest_data_obj(user_orcid, metadata, template_instance, crawling_types, data_obj, template_conf))
+    if data_obj:
+        template_conf = get_template_config(metadata)
+        if isinstance(data_obj, list):
+            # single template may require to ingest multiple objects such as Split and Neuron
+            sorted_data_obj = sort_by_ingestion_order(data_obj)
+            created_split = None
+            for data in sorted_data_obj:
+                if created_split and (isinstance(data, Neuron) or isinstance(data, SplitDriver)):
+                    data.set_driver_line([str(created_split)])
+                response = ingest_data_obj(user_orcid, metadata, template_instance, crawling_types, data, template_conf)
+                if isinstance(data, Split):
+                    created_split = response["short_form"]
+                results.append(response)
+        else:
+            results.append(ingest_data_obj(user_orcid, metadata, template_instance, crawling_types, data_obj, template_conf))
 
     return results
 

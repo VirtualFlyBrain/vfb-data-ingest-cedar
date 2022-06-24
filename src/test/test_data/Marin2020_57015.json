@@ -52,10 +52,12 @@
   "primary_name": {
     "@value": "Multiglomerular mALT lvPN VC5+"
   },
-  "classification": {
-    "@id": "http://purl.obolibrary.org/obo/FBbt_00049762",
-    "rdfs:label": "adult antennal lobe projection neuron VM6+ lvPN 2"
-  },
+  "classification":[
+    {
+      "@id": "http://purl.obolibrary.org/obo/FBbt_00049762",
+      "rdfs:label": "adult antennal lobe projection neuron VM6+ lvPN 2"
+    }
+  ],
   "imaging_type": {
     "@id": "http://purl.obolibrary.org/obo/FBbi_00000258",
     "rdfs:label": "transmission electron microscopy (TEM)"

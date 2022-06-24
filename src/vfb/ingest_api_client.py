@@ -27,11 +27,15 @@ def get_user_details(user_orcid_id):
                                           admin_orcid=os.environ['CURATIONAPI_USER'],
                                           admin_apikey=os.environ['CURATIONAPI_KEY'])
     log.info("Request made: " + service_url)
-    r = requests.get(service_url, headers=headers)
+
+    try:
+        r = requests.get(service_url, headers=headers)
+    except requests.exceptions.RequestException as e:
+        raise CrawlerException("vfb-data-ingest-api connection failed, check if service is alive: " + str(e))
 
     if r.status_code != 200:
         log.error("Error occurred while getting vfb user {}".format(user_orcid_id) + "\n" + r.text)
-        raise CrawlerException("Error occurred while getting vfb user {}".format(user_orcid_id))
+        raise CrawlerException("Error occurred while getting vfb user {}: \n {}".format(user_orcid_id, r.text))
 
     return r.json()
 

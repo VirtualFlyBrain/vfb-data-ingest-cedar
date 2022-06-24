@@ -18,6 +18,7 @@ NEURON_SAMPLE_DATA_2 = os.path.join(current_dir, "./test_data/Marin2020_57015.js
 NEURON_SAMPLE_DATA_3 = os.path.join(current_dir, "./test_data/Test2022_MBON02.json")
 NEURON_SAMPLE_DATA_4 = os.path.join(current_dir, "./test_data/Xu2020_1807191501.json")
 NEURON_EXCEPTION_DATA = os.path.join(current_dir, "./test_data/Exception_data.json")
+SPLIT_SAMPLE_DATA_1 = os.path.join(current_dir, "./test_data/Split1_data.json")
 DATASET_1 = os.path.join(current_dir, "./test_data/Dataset1.json")
 
 
@@ -47,7 +48,7 @@ class IngestApiTest(unittest.TestCase):
             get_user_details("not_existing_id")
             self.fail("There should be an exception.")
         except CrawlerException as err:
-            self.assertEqual("Error occurred while getting vfb user not_existing_id", err.message)
+            self.assertTrue(str(err.message).startswith("Error occurred while getting vfb user not_existing_id"))
 
     def test_post_neuron(self):
         results = ingest_data(TEST_USER, read_json(NEURON_SAMPLE_DATA_1), TEST_INSTANCE, CRAWLING_TYPES)
@@ -56,7 +57,7 @@ class IngestApiTest(unittest.TestCase):
         written_data = results[0]["neurons"][0]
         self.assertEqual(1, len(results[0]["neurons"]))
         self.assertEqual("WED-PN1", written_data["primary_name"])
-        self.assertEqual("http://purl.obolibrary.org/obo/FBbt_00049454", written_data["classification"])
+        self.assertEqual(["http://purl.obolibrary.org/obo/FBbt_00049454"], written_data["classification"])
         self.assertEqual("confocal microscopy", written_data["imaging_type"])
         self.assertEqual(0, len(written_data["driver_line"]))
         self.assertEqual("http://virtualflybrain.org/reports/Zoglu2020", written_data["datasetid"])
@@ -86,7 +87,7 @@ class IngestApiTest(unittest.TestCase):
         neuron_data = results[1]["neurons"][0]
         self.assertEqual(1, len(results[1]["neurons"]))
         self.assertEqual("Multiglomerular mALT lvPN VC5+", neuron_data["primary_name"])
-        self.assertEqual("http://purl.obolibrary.org/obo/FBbt_00049762", neuron_data["classification"])
+        self.assertEqual(["http://purl.obolibrary.org/obo/FBbt_00049762"], neuron_data["classification"])
         self.assertEqual("transmission electron microscopy (TEM)", neuron_data["imaging_type"])
         self.assertEqual(1, len(neuron_data["driver_line"]))
         self.assertEqual("VFBexp_FBti0001774FBti0001776", neuron_data["driver_line"][0])
@@ -120,7 +121,7 @@ class IngestApiTest(unittest.TestCase):
         self.assertEqual(1, len(results[1]["neurons"]))
 
         self.assertEqual("MBON02", written_data["primary_name"])
-        self.assertEqual("http://virtualflybrain.org/reports/VFBexp_FBti0001774FBti0001776", written_data["classification"])
+        self.assertEqual(["http://virtualflybrain.org/reports/VFBexp_FBti0001774FBti0001776"], written_data["classification"])
         self.assertEqual("confocal microscopy", written_data["imaging_type"])
         self.assertEqual(1, len(written_data["driver_line"]))
         self.assertEqual("VFBexp_FBti0001774FBti0001776", written_data["driver_line"][0])
@@ -147,7 +148,7 @@ class IngestApiTest(unittest.TestCase):
         # self.assertEqual(1, len(response_data["neurons"]))
         # written_data = response_data["neurons"][0]
         self.assertEqual("LLPC3", written_data["primary_name"])
-        self.assertEqual("http://purl.obolibrary.org/obo/fbbt/vfb/VFBext_0000004", written_data["classification"])
+        self.assertEqual(["http://purl.obolibrary.org/obo/fbbt/vfb/VFBext_0000004"], written_data["classification"])
         self.assertEqual("serial block face SEM (SBFSEM)", written_data["imaging_type"])
         self.assertEqual(0, len(written_data["driver_line"]))
         self.assertEqual("http://virtualflybrain.org/reports/Zoglu2020", written_data["datasetid"])
@@ -215,6 +216,27 @@ class IngestApiTest(unittest.TestCase):
         download_neuron_image(test_url, "test_dataset")
         self.assertTrue(os.path.isfile(expected_file))
 
+    def test_post_split_driver(self):
+        results = ingest_data(TEST_USER, read_json(SPLIT_SAMPLE_DATA_1), TEST_INSTANCE, CRAWLING_TYPES)
+        self.assertEqual(1, len(results))
+
+        written_data = results[0]["neurons"][0]
+        self.assertEqual(1, len(results[0]["neurons"]))
+        self.assertEqual("dummy image name", written_data["primary_name"])
+        self.assertEqual(["http://purl.obolibrary.org/obo/FBbt_00001487"], written_data["classification"])
+        self.assertEqual("serial block face SEM (SBFSEM)", written_data["imaging_type"])
+        self.assertEqual(0, len(written_data["driver_line"]))
+        self.assertEqual("http://virtualflybrain.org/reports/Zoglu2020", written_data["datasetid"])
+        self.assertEqual("VFB_00200000", written_data["template_id"])
+        # ????
+        # self.assertEqual(1, len(written_data["part_of"]))
+        # self.assertEqual("FBbt_00002695", written_data["part_of"][0])
+        self.assertEqual(1, len(written_data["input_neuropils"]))
+        self.assertTrue("FBbt_00001084" in written_data["input_neuropils"])
+        self.assertEqual(None, written_data["alternative_names"])
+        self.assertEqual("", written_data["classification_comment"])
+        self.assertEqual(None, written_data["filename"])
+        self.assertEqual("", written_data["comment"])
 
 def read_json(file_name):
     with open(file_name) as json_file:

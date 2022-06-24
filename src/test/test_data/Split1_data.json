@@ -39,7 +39,6 @@
     "primary_name": "https://schema.metadatacenter.org/properties/299cb94f-53de-48a5-98aa-b84055926d1d",
     "classification": "https://schema.metadatacenter.org/properties/e61e0fa3-3cf8-4fe8-a84d-ed456bd98f4a",
     "imaging_type": "https://schema.metadatacenter.org/properties/331b09cf-30ef-4da5-8bba-a7c1522c82c6",
-    "driver_line": "https://schema.metadatacenter.org/properties/cc82b6cc-a5e4-4033-8810-0c9547cd6371",
     "dataset_id": "https://schema.metadatacenter.org/properties/872b1ae2-0a24-401a-9775-443c2a1a4e4d",
     "template_id": "https://schema.metadatacenter.org/properties/7bd32240-74f9-465a-8c9f-55b8519a94d3",
     "part of": "http://purl.obolibrary.org/obo/BFO_0000050",
@@ -47,59 +46,57 @@
     "has synaptic terminal in": "http://purl.obolibrary.org/obo/RO_0002130",
     "alternative_names": "https://schema.metadatacenter.org/properties/57042024-7ba6-4688-8de4-db482346ff67",
     "classification_comment": "https://schema.metadatacenter.org/properties/099772d4-20a7-4b41-be86-3ab5a6effb71",
-    "filename": "https://schema.metadatacenter.org/properties/50c5d4d5-2d8a-49a8-a4d5-60561fac27e3"
+    "filename": "https://schema.metadatacenter.org/properties/50c5d4d5-2d8a-49a8-a4d5-60561fac27e3",
+    "image_location": "https://schema.metadatacenter.org/properties/48cf2868-608d-4ff3-80da-cd3b4d942af6",
+    "publish": "https://schema.metadatacenter.org/properties/6b7955c4-f41e-41c7-a542-77ae872b6b85",
+    "alt_driver": "https://schema.metadatacenter.org/properties/e3f1918a-3ef8-42cf-9d52-82b19ca732e9",
+    "split_combo": "https://schema.metadatacenter.org/properties/cc82b6cc-a5e4-4033-8810-0c9547cd6371",
+    "EP_fragment": "https://schema.metadatacenter.org/properties/ec2c8893-0acf-4b9a-b095-d2faf2268daa",
+    "single_neuron": "https://schema.metadatacenter.org/properties/471754db-d1aa-4fb9-a71c-c04c415160fd",
+    "hemidriver_1": "https://schema.metadatacenter.org/properties/94f8104d-5c6e-478f-8f8a-1511c8c5d927",
+    "hemidriver_2": "https://schema.metadatacenter.org/properties/830a10f5-ec1d-40f1-aafc-d9ebe8d12dcf"
   },
   "primary_name": {
-    "@value": "LLPC3"
+    "@value": "dummy image name"
   },
-  "classification":[
+  "classification": [
     {
-      "@id": "http://purl.obolibrary.org/obo/FBbt_00003881",
-      "rdfs:label": "lobula-lobula plate columnar neuron LLPC"
+      "@id": "http://purl.obolibrary.org/obo/FBbt_00001487",
+      "rdfs:label": "3-5Ic"
     }
   ],
   "imaging_type": {
     "@id": "http://purl.obolibrary.org/obo/FBbi_00050000",
     "rdfs:label": "focussed ion beam scanning electron microscopy (FIB-SEM)"
   },
-  "driver_line": [
-    {}
-  ],
   "dataset_id": {
     "@value": "Zoglu2020"
   },
   "template_id": {
-    "@id": "http://virtualflybrain.org/reports/VFB_00101384",
-    "rdfs:label": "JRC_FlyEM_Hemibrain"
+    "@id": "http://virtualflybrain.org/reports/VFB_00200000",
+    "rdfs:label": "JRC2018UnisexVNC"
   },
-  "part of": {
-    "@id": "http://purl.obolibrary.org/obo/FBbt_00007011",
-    "rdfs:label": "female organism"
-  },
+  "part of": {},
   "has soma location": {
-    "@id": "http://purl.obolibrary.org/obo/FBbt_00111152",
-    "rdfs:label": "cell body rind of adult optic lobe"
+    "@id": "http://purl.obolibrary.org/obo/FBbt_00002695",
+    "rdfs:label": "campaniform sensillum P3"
   },
   "has synaptic terminal in": [
     {
-      "@id": "http://purl.obolibrary.org/obo/FBbt_00003852",
-      "rdfs:label": "lobula"
-    },
-    {
-      "@id": "http://purl.obolibrary.org/obo/FBbt_00003885",
-      "rdfs:label": "lobula plate"
+      "@id": "http://purl.obolibrary.org/obo/FBbt_00001084",
+      "rdfs:label": "embryonic labial neuromere"
     }
   ],
   "alternative_names": [
     {
-      "@value": ""
+      "@value": null
     }
   ],
   "classification_comment": {
-    "@value": ""
+    "@value": null
   },
   "filename": {
-    "@value": "1807191501"
+    "@value": null
   },
   "image_location": {
     "@value": "https://raw.githubusercontent.com/VirtualFlyBrain/vfb-data-ingest-cedar/main/src/test/test_data/Exception_data.json"
@@ -112,20 +109,24 @@
   "alt_driver": {
     "@value": null
   },
-  "split_combo": [
-    {
-      "@id": "http://virtualflybrain.org/reports/VFBexp_FBti0001774FBti0001776",
-      "rdfs:label": "P{A92}bab1[A30] ∩ P{w[aRsLTR]}V3 expression pattern"
-    }
-  ],
+  "split_combo": {
+    "@id": "http://virtualflybrain.org/reports/VFBexp_FBtp0093984FBti0202228",
+    "rdfs:label": "P{ort-Gal4.C1a.DBD} ∩ P{dVP16AD}ET9A expression pattern"
+  },
   "EP_fragment": {
     "@value": "Yes"
   },
   "single_neuron": {
-    "@value": "No"
+    "@value": "Yes"
   },
-  "hemidriver_1": {
-  },
-  "hemidriver_2": {
-  }
+  "hemidriver_1": {},
+  "hemidriver_2": {},
+  "schema:isBasedOn": "https://repo.metadatacenter.org/templates/8bda8983-1ec5-4600-a4ee-52727aa25649",
+  "schema:name": "Virtual Fly Brain Neuron Split Image metadata",
+  "schema:description": "VFB neuron descriptive metadata for new image of split",
+  "pav:createdOn": "2022-06-24T07:09:38-07:00",
+  "pav:createdBy": "https://metadatacenter.org/users/1c2ecbd5-165a-41cc-b0dd-e3a27314edcd",
+  "pav:lastUpdatedOn": "2022-06-24T07:21:41-07:00",
+  "oslc:modifiedBy": "https://metadatacenter.org/users/6d8029e2-68a3-4230-8393-cc457bf29d97",
+  "@id": "https://repo.metadatacenter.org/template-instances/4f8feb99-c2e9-4a6c-9c93-88abcb7145b8"
 }

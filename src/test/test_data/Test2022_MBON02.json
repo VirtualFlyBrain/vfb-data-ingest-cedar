@@ -52,10 +52,12 @@
   "primary_name": {
     "@value": "MBON02"
   },
-  "classification": {
-    "@id": "http://purl.obolibrary.org/obo/FBbt_00111012",
-    "rdfs:label": "mushroom body output neuron 2"
-  },
+  "classification":[
+    {
+      "@id": "http://purl.obolibrary.org/obo/FBbt_00111012",
+      "rdfs:label": "mushroom body output neuron 2"
+    }
+  ],
   "imaging_type": {
     "@id": "http://purl.obolibrary.org/obo/FBbi_00000251",
     "rdfs:label": "confocal microscopy"
