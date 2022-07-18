@@ -37,9 +37,13 @@ class ReportingTest(unittest.TestCase):
                             "\n"
                             "==== Successfully Crawled CEDAR Forms \n"
                             "1- CEDAR form crawled: https://cedar.metadatacenter.org/instances/edit/instance1\n"
+                            "	- Created entity: \n"
                             "2- CEDAR form crawled: https://cedar.metadatacenter.org/instances/edit/instance2\n"
+                            "	- Created entity: \n"
                             "3- CEDAR form crawled: https://cedar.metadatacenter.org/instances/edit/instance3\n"
+                            "	- Created entity: \n"
                             "4- CEDAR form crawled: https://cedar.metadatacenter.org/instances/edit/instance4\n"
+                            "	- Created entity: \n"
                             "")
 
         self.assertEqual(expected_content, content)
