@@ -8,6 +8,8 @@ ENV CURATIONAPI="http://localhost:5000/api"
 ENV CURATIONAPI_USER="https://orcid.org/cedar_crawler"
 ENV CURATIONAPI_KEY = ""
 ENV CRAWL_TYPE = '["Dataset", "Neuron", "Split", "SplitDriver"]'
+ENV TECH_SUPPORT_EMAIL = '["hkir@ebi.ac.uk"]'
+ENV EDITOR_SUPPORT_EMAIL = '["huseyin_kir@yahoo.com"]'
 ENV IMAGES_FOLDER_PATH = '/images/'
 
 RUN apt-get update && \

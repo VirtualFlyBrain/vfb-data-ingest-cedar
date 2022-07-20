@@ -1,9 +1,10 @@
 import os
 import smtplib
 import logging
+import json
 from typing import List
 
-from exception.crawler_exception import CrawlerException
+from exception.crawler_exception import CrawlerException, TechnicalException, ContentException
 from vfb.ingest_api_client import get_user_details
 
 REPORT_SUBJECT = "VFB data ingestion report"
@@ -22,11 +23,16 @@ class Report:
         self.editor = editor
         self.is_success = True
         self.error_message = None
+        self.error_type = None
         self.created_entity = created_entity
 
     def set_error(self, message):
         self.is_success = False
         self.error_message = message
+
+    def set_error_type(self, error_type):
+        self.is_success = False
+        self.error_type = error_type
 
 
 class FailureReport:
@@ -46,8 +52,8 @@ def send_reports(reports: list) -> List[FailureReport]:
     Returns:
         Failure reports if any of the send operation failed.
     """
-    sender_email = get_email_user()
-    password = get_email_password()
+    sender_email = get_crawler_email()
+    password = get_crawler_email_password()
 
     user_reports = dict()
     for report in reports:
@@ -56,15 +62,32 @@ def send_reports(reports: list) -> List[FailureReport]:
         else:
             user_reports[report.editor] = [report]
 
+    failed_reports = send_user_reports(password, sender_email, user_reports)
+    send_failure_reports(sender_email, password, reports, type(TechnicalException).__name__, get_tech_support_emails())
+    send_failure_reports(sender_email, password, reports, type(ContentException).__name__, get_editor_support_emails())
+    return failed_reports
+
+
+def send_user_reports(password, sender_email, user_reports):
+    """
+    Sends crawling results to the users.
+    Args:
+        password: mail sender password
+        sender_email: mail sender email
+        user_reports: crawling reports aggregated per user
+    Returns:
+        Failure reports if any of the send operation failed.
+    """
     failed_reports = list()
     for user in user_reports:
-        editor_orcid = user
-        if not str(editor_orcid).startswith(ORCID_ID_PREFIX):
-            editor_orcid = ORCID_ID_PREFIX + editor_orcid
-        user_info = get_user_details(editor_orcid)
+        user_orcid = user
+        if not str(user_orcid).startswith(ORCID_ID_PREFIX):
+            user_orcid = ORCID_ID_PREFIX + user_orcid
+        user_info = get_user_details(user_orcid)
         if "email" not in user_info or not user_info["email"]:
-            log.error("User email doesn't exist in the VFB :" + editor_orcid)
-            failed_reports.append(FailureReport(editor_orcid, "User email doesn't exist in the VFB :" + editor_orcid, user_reports[user]))
+            log.error("User email doesn't exist in the VFB :" + user_orcid)
+            failed_reports.append(
+                FailureReport(user_orcid, "User email doesn't exist in the VFB :" + user_orcid, user_reports[user]))
         else:
             receiver_email = user_info["email"]
             try:
@@ -72,10 +95,38 @@ def send_reports(reports: list) -> List[FailureReport]:
             except Exception as err:
                 log.error("Failed to sent report mail to '{}', cause: {}.".format(receiver_email, str(err)))
                 failed_reports.append(
-                    FailureReport(editor_orcid, "Failed to sent report mail to '{}', cause: {}.".format(receiver_email,
-                                                                                                        str(err)),
+                    FailureReport(user_orcid, "Failed to sent report mail to '{}', cause: {}.".format(receiver_email,
+                                                                                                      str(err)),
                                   user_reports[user]))
     return failed_reports
+
+
+def send_failure_reports(sender_email, password, reports, error_type, recipients):
+    """
+    Sends crawling results failed due to given error type to the tech team.
+    Args:
+        sender_email: mail sender email
+        password: mail sender password
+        reports: all crawling reports
+        error_type: type of the errors to consider for reporting
+        recipients: list of email recipients
+    """
+    error_report = "The following failures occurred during crawling: \n \n"
+    error_counter = 1
+
+    for report in reports:
+        if report.error_message and report.error_type == error_type:
+            error_report += str(error_counter) + "- Error occurred while processing: " + CEDAR_SITE + \
+                            report.template_instance + ".\n"
+            error_report += "\t User: " + report.editor + "\n"
+            error_report += "\t Cause: " + report.error_message + "\n\n"
+            error_counter += 1
+
+    if error_counter > 1:
+        try:
+            send_email(sender_email, password, recipients, error_report)
+        except Exception as err:
+            log.error("Failed to sent report mail to '{}', cause: {}.".format(str(recipients), str(err)))
 
 
 def generate_report_content(user_reports: List[Report]):
@@ -88,11 +139,13 @@ def generate_report_content(user_reports: List[Report]):
             error_report += str(error_counter) + "- Error occurred while processing: " + CEDAR_SITE + \
                             report.template_instance + ".\n"
             error_report += "\t Cause: " + report.error_message + "\n\n"
+            if report.error_type == type(TechnicalException).__name__:
+                error_report += "\t (Internal error details are sent to the support team as well)\n"
             error_counter += 1
         else:
             success_report += str(success_counter) + "- CEDAR form crawled: " + CEDAR_SITE + \
                               report.template_instance + "\n"
-            success_report += "\t- Created entity: " + report.created_entity + "\n"
+            success_report += "\t- Created entity: " + report.created_entity + "\n\n"
             success_counter += 1
 
     message = ""
@@ -117,9 +170,9 @@ def generate_failure_report_content(failed_reports: List[FailureReport]):
 
 
 def send_failure_message_to_support(failure_message: str):
-    sender_email = get_email_user()
-    password = get_email_password()
-    send_email(sender_email, password, get_tech_suport_email_user(), failure_message, subject="VFB Crawler Error")
+    sender_email = get_crawler_email()
+    password = get_crawler_email_password()
+    send_email(sender_email, password, get_tech_support_emails(), failure_message, subject="VFB Crawler Error")
 
 
 def send_failure_report_to_support(failed_reports: list):
@@ -129,12 +182,12 @@ def send_failure_report_to_support(failed_reports: list):
     """
     if failed_reports:
         try:
-            sender_email = get_email_user()
-            password = get_email_password()
-            send_email(sender_email, password, get_tech_suport_email_user(), generate_failure_report_content(failed_reports))
+            sender_email = get_crawler_email()
+            password = get_crawler_email_password()
+            send_email(sender_email, password, get_tech_support_emails(), generate_failure_report_content(failed_reports))
         except Exception as err:
             log.error("Failed to sent failure report mail to the support team '{}', cause: {}.".format(
-                get_tech_suport_email_user(), str(err)))
+                get_tech_support_emails(), str(err)))
 
 
 def send_email(sender_email, password, receiver_email, message, subject=REPORT_SUBJECT):
@@ -148,22 +201,29 @@ def send_email(sender_email, password, receiver_email, message, subject=REPORT_S
     log.info("Successfully send mail to '{}'.".format(receiver_email))
 
 
-def get_email_password():
+def get_crawler_email_password():
     if "VFBCRAWLER_EMAIL_PASS" in os.environ:
         return os.getenv("VFBCRAWLER_EMAIL_PASS")
     else:
         raise CrawlerException("vfbcrawler email password is not defined in the environment variables. !!!")
 
 
-def get_email_user():
+def get_crawler_email():
     if "VFBCRAWLER_EMAIL_USER" in os.environ:
         return os.getenv("VFBCRAWLER_EMAIL_USER")
     else:
         raise CrawlerException("vfbcrawler email user is not defined in the environment variables. !!!")
 
 
-def get_tech_suport_email_user():
+def get_tech_support_emails():
     if "TECH_SUPPORT_EMAIL" in os.environ:
-        return os.getenv("TECH_SUPPORT_EMAIL")
+        return json.loads(os.getenv("TECH_SUPPORT_EMAIL"))
+    else:
+        raise CrawlerException("Tech support email is not defined in the environment variables. !!!")
+
+
+def get_editor_support_emails():
+    if "EDITOR_SUPPORT_EMAIL" in os.environ:
+        return json.loads(os.getenv("EDITOR_SUPPORT_EMAIL"))
     else:
         raise CrawlerException("Tech support email is not defined in the environment variables. !!!")

@@ -34,11 +34,7 @@ def main():
             log.info('SUCCESS')
         else:
             log.info('FAILURE')
-    except TechnicalException as err:
-        log.error(err, exc_info=True)
-        send_failure_message_to_support("VFB Crawler failed: " + str(err.message))
-        log.info('FAILURE')
-    except ContentException as err:
+    except (ContentException, TechnicalException) as err:
         log.error(err, exc_info=True)
         send_failure_message_to_support("VFB Crawler failed: " + str(err.message))
         log.info('FAILURE')
