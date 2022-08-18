@@ -47,10 +47,10 @@ class Neuron:
         self.alternative_names = []
         self.external_identifiers = []
         # self.external_identifiers = dict() # { GO: 001 }
-        self.classification = "" # http://
+        self.classification = []  # [http://..., ]
         self.classification_comment = ""
         # self.url_skeleton_id = ""
-        self.template_id = "" # "grc2018"
+        self.template_id = ""  # "grc2018"
         self.filename = ""
         self.imaging_type = "" #computer graphic
         self.part_of = []  # part_of http://purl.obolibrary.org/obo/BFO_0000050

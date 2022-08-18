@@ -7,7 +7,7 @@ from datetime import datetime as dt
 from vfb.repository import db
 from vfb.report import Report
 from vfb import ingest
-from exception.crawler_exception import ContentException, CrawlerException
+from exception.crawler_exception import ContentException, CrawlerException, TechnicalException
 
 logging.basicConfig()
 logging.root.setLevel(logging.INFO)
@@ -38,12 +38,20 @@ def crawl(crawling_types):
                     if result:
                         update_time = dt.strptime(instance_data["pav:lastUpdatedOn"], DATE_FORMAT)
                         # db.update_last_crawling_time(instance, editor, dt.strftime(update_time, DATE_FORMAT))
-                        reports.append(Report(template, instance, editor))
-            except ContentException as err:
+                        reports.append(Report(template, instance, editor, str(result[0])))
+            except TechnicalException as err:
                 log.error("Exception occurred while processing instance '{}' of template '{}'.".format(instance, template))
-                # log.error("Exception occurred during crawling: " + err.message)
+                log.error("Exception occurred during crawling: " + err.message)
                 report = Report(template, instance, editor)
                 report.set_error(err.message)
+                report.set_error_type(type(TechnicalException).__name__)
+                reports.append(report)
+            except ContentException as err:
+                log.error("Exception occurred while processing instance '{}' of template '{}'.".format(instance, template))
+                log.error("Exception occurred during crawling: " + err.message)
+                report = Report(template, instance, editor)
+                report.set_error(err.message)
+                report.set_error_type(type(ContentException).__name__)
                 reports.append(report)
 
     return reports
@@ -64,6 +72,7 @@ def get_user_orcid(user_id):
                 orcid_id = provider["id"]
 
     if not orcid_id:
+        log.error("User's orcid_id couldn't be found in CEDAR: " + user_id)
         raise CrawlerException("User's orcid_id couldn't be found in CEDAR: " + user_id)
 
     return orcid_id

@@ -50,21 +50,18 @@
     "filename": "https://schema.metadatacenter.org/properties/50c5d4d5-2d8a-49a8-a4d5-60561fac27e3"
   },
   "primary_name": {
-    "@value": "MBON02"
+    "@value": "Multiglomerular mALT lvPN VC5+ alternative"
   },
   "classification":[
     {
-      "@id": "http://purl.obolibrary.org/obo/FBbt_00111012",
-      "rdfs:label": "mushroom body output neuron 2"
+      "@id": "http://purl.obolibrary.org/obo/FBbt_00049762",
+      "rdfs:label": "adult antennal lobe projection neuron VM6+ lvPN 2"
     }
   ],
   "imaging_type": {
-    "@id": "http://purl.obolibrary.org/obo/FBbi_00000251",
-    "rdfs:label": "confocal microscopy"
+    "@id": "http://purl.obolibrary.org/obo/FBbi_00000258",
+    "rdfs:label": "transmission electron microscopy (TEM)"
   },
-  "driver_line": [
-    {}
-  ],
   "dataset_id": {
     "@value": "Zoglu2020"
   },
@@ -73,36 +70,39 @@
     "rdfs:label": "JRC2018Unisex"
   },
   "part of": {
-    "@id": "http://purl.obolibrary.org/obo/FBbt_00007004",
-    "rdfs:label": "male organism"
+    "@id": "http://purl.obolibrary.org/obo/FBbt_00007011",
+    "rdfs:label": "female organism"
   },
-  "has soma location": {},
+  "has soma location": {
+    "@id": "http://purl.obolibrary.org/obo/FBbt_00100211",
+    "rdfs:label": "cell body rind of adult antennal lobe"
+  },
   "has synaptic terminal in": [
     {
-      "@id": "http://purl.obolibrary.org/obo/FBbt_00013694",
-      "rdfs:label": "adult mushroom body beta'-lobe"
+      "@id": "http://purl.obolibrary.org/obo/FBbt_00110029",
+      "rdfs:label": "antennal lobe glomerulus VM6"
     },
     {
-      "@id": "http://purl.obolibrary.org/obo/FBbt_00110658",
-      "rdfs:label": "adult mushroom body beta-lobe"
-    },
-    {
-      "@id": "http://purl.obolibrary.org/obo/FBbt_00007145"
+      "@id": "http://purl.obolibrary.org/obo/FBbt_00007053",
+      "rdfs:label": "adult lateral horn"
     }
   ],
   "alternative_names": [
     {
-      "@value": ""
+      "@value": "VC5+ lvPN2#1 alt"
+    },
+    {
+      "@value": "Multiglomerular mALT lvPN#R18 alt"
     }
   ],
   "classification_comment": {
-    "@value": "comment1"
+    "@value": "VC5 renamed to VM6 alt"
   },
   "filename": {
-    "@value": "MBON02"
+    "@value": "57015"
   },
   "image_location": {
-    "@value": ""
+    "@value": "https://raw.githubusercontent.com/VirtualFlyBrain/vfb-data-ingest-cedar/main/src/test/test_data/Exception_data.json"
   },
   "publish": [
     {
@@ -117,10 +117,10 @@
     }
   ],
   "EP_fragment": {
-    "@value": "No"
+    "@value": "Yes"
   },
   "single_neuron": {
-    "@value": "No"
+    "@value": "Yes"
   },
   "hemidriver_1": {
     "@id": "http://flybase.org/reports/FBti0001774",

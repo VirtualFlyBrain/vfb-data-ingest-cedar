@@ -25,9 +25,6 @@ class VFBKB():
             self.password = os.getenv('KBpassword')
             try:
                 if self.db_client == "vfb":
-                    print(self.kb)
-                    print(self.user)
-                    print(self.password)
                     self.db = neo4j_connect(self.kb, self.user, self.password)
                     self.kb_owl_pattern_writer = KB_pattern_writer(self.kb, self.user, self.password)
                     self.kb_owl_edge_writer = kb_owl_edge_writer(self.kb, self.user, self.password)

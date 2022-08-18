@@ -27,11 +27,20 @@ def get_user_details(user_orcid_id):
                                           admin_orcid=os.environ['CURATIONAPI_USER'],
                                           admin_apikey=os.environ['CURATIONAPI_KEY'])
     log.info("Request made: " + service_url)
-    r = requests.get(service_url, headers=headers)
+
+    try:
+        r = requests.get(service_url, headers=headers)
+    except requests.exceptions.RequestException as e:
+        log.error("vfb-data-ingest-api connection failed, check if service is alive: " + str(e))
+        raise CrawlerException("vfb-data-ingest-api connection failed, check if service is alive: " + str(e))
 
     if r.status_code != 200:
         log.error("Error occurred while getting vfb user {}".format(user_orcid_id) + "\n" + r.text)
-        raise CrawlerException("Error occurred while getting vfb user {}".format(user_orcid_id))
+        error_message = r.text
+        if "Database not initialised!" in error_message:
+            # db init error has a very long html message, simplify it
+            error_message = "Database not initialised!"
+        raise CrawlerException("Error occurred while getting vfb user {}: \n {}".format(user_orcid_id, error_message))
 
     return r.json()
 
@@ -40,7 +49,6 @@ def post_neuron(data, user_orcid, api_key):
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
     data_wrapper = dict()
     data_wrapper["neurons"] = [vars(data)]
-    print(json.dumps(vars(data)))
     log.info("Posting neuron ({}) of user {} to VFB API.".format(str(data.primary_name), user_orcid))
     r = requests.post(POST_NEURON.format(curation_api=os.environ['CURATIONAPI'],
                                          user_orcid=user_orcid,
@@ -58,7 +66,6 @@ def download_neuron_image(image_url, dataset_name):
     if image_url:
         if "IMAGES_FOLDER_PATH" in os.environ:
             target_folder = os.path.join(os.getenv("IMAGES_FOLDER_PATH"), dataset_name)
-            print("Target Folder: " + str(target_folder))
             if target_folder and not os.path.exists(target_folder):
                 os.makedirs(target_folder)
             get_response = requests.get(image_url, stream=True)
@@ -77,7 +84,6 @@ def post_dataset(data, user_orcid, api_key):
     data_content = vars(data)
     data_content.pop('publication', None)
     data_content.pop('source_data', None)
-    print(json.dumps(data_content))
     log.info("Posting dataset ({}) of user {} to VFB API.".format(str(data.short_name), user_orcid))
     r = requests.post(POST_DATASET.format(curation_api=os.environ['CURATIONAPI'],
                                               user_orcid=user_orcid,
@@ -129,7 +135,6 @@ def post_ep_split_flp_out(data, user_orcid, api_key):
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
     data_wrapper = dict()
     data_wrapper["split_drivers"] = [vars(data)]
-    print(json.dumps(vars(data)))
     log.info("Posting EP/Split Flp-Out ({}) of user {} to VFB API.".format(str(data.primary_name), user_orcid))
     r = requests.post(POST_EP_SPLIT_FLP_OUT.format(curation_api=os.environ['CURATIONAPI'],
                                                    user_orcid=user_orcid,

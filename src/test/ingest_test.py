@@ -21,7 +21,8 @@ class IngestTest(unittest.TestCase):
 
         print(vfb_data)
         self.assertEqual("WED-PN1", vfb_data.primary_name)
-        self.assertEqual("FBbt_00049454", vfb_data.classification)
+        self.assertEqual(1, len(vfb_data.classification))
+        self.assertTrue("FBbt_00049454" in vfb_data.classification)
         self.assertEqual("confocal microscopy", vfb_data.imaging_type)
         self.assertEqual(0, len(vfb_data.driver_line))
         self.assertEqual("Zoglu2020", vfb_data.datasetid)
@@ -47,7 +48,8 @@ class IngestTest(unittest.TestCase):
         neuron = vfb_data[1]
         print(neuron)
         self.assertEqual("Multiglomerular mALT lvPN VC5+", neuron.primary_name)
-        self.assertEqual("FBbt_00049762", neuron.classification)
+        self.assertEqual(1, len(neuron.classification))
+        self.assertTrue("FBbt_00049762" in neuron.classification)
         self.assertEqual("TEM", neuron.imaging_type)
         self.assertEqual("Zoglu2020", neuron.datasetid)
         self.assertEqual("VFB_00101567", neuron.template_id)
@@ -77,7 +79,8 @@ class IngestTest(unittest.TestCase):
         neuron = vfb_data[1]
         print(neuron)
         self.assertEqual("MBON02", neuron.primary_name)
-        self.assertEqual("FBbt_00111012", neuron.classification)
+        self.assertEqual(1, len(neuron.classification))
+        self.assertTrue("FBbt_00111012" in neuron.classification)
         self.assertEqual("confocal microscopy", neuron.imaging_type)
         # self.assertEqual(1, len(neuron.driver_line))
         # self.assertEqual("VFBexp_FBtp0099466FBtp0099529", neuron.driver_line[0])
@@ -103,7 +106,8 @@ class IngestTest(unittest.TestCase):
         self.assertEqual(type(vfb_data), SplitDriver)
         neuron = vfb_data
         self.assertEqual("LLPC3", neuron.primary_name)
-        self.assertEqual("FBbt_00003881", neuron.classification)
+        self.assertEqual(1, len(neuron.classification))
+        self.assertTrue("FBbt_00003881" in neuron.classification)
         self.assertEqual("SB-SEM", neuron.imaging_type)
         self.assertEqual(0, len(neuron.driver_line))
         self.assertEqual("Zoglu2020", neuron.datasetid)
@@ -117,7 +121,6 @@ class IngestTest(unittest.TestCase):
         self.assertEqual("", neuron.classification_comment)
         self.assertEqual("1807191501", neuron.filename)
         self.assertEqual("['VFBexp_FBti0001774FBti0001776']", neuron.comment)
-
 
     def test_ingest_data_5(self):
         vfb_data = parse_template_data(read_json(SAMPLE_DATA_5), "test_template_instance")
