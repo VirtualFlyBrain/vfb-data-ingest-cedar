@@ -1,6 +1,5 @@
 import logging
 import os
-import json
 
 import schedule
 import time
@@ -25,7 +24,7 @@ def schedule_crawler():
 def main():
     try:
         log.info(os.getenv("CRAWL_TYPE").strip())
-        crawling_types = json.loads(os.getenv("CRAWL_TYPE", '["Dataset", "Neuron", "Split", "SplitDriver"]').strip())
+        crawling_types = [x.strip() for x in os.getenv("CRAWL_TYPE", 'Dataset,Neuron,Split,SplitDriver').split(',')]
         log.info(">>>>> Crawler started {} for types: '{}'".format(datetime.now().strftime("%m/%d/%Y, %H:%M:%S"), str(crawling_types)))
         reports = crawler.crawl(crawling_types)
         log.info(">>>>> Crawling completed {} for types: '{}'".format(datetime.now().strftime("%m/%d/%Y, %H:%M:%S"), str(crawling_types)))

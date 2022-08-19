@@ -1,7 +1,6 @@
 import os
 import smtplib
 import logging
-import json
 from typing import List
 
 from exception.crawler_exception import CrawlerException, TechnicalException, ContentException
@@ -217,13 +216,13 @@ def get_crawler_email():
 
 def get_tech_support_emails():
     if "TECH_SUPPORT_EMAIL" in os.environ:
-        return json.loads(os.getenv("TECH_SUPPORT_EMAIL").strip())
+        return [x.strip() for x in os.getenv("TECH_SUPPORT_EMAIL").split(',')]
     else:
         raise CrawlerException("Tech support email is not defined in the environment variables. !!!")
 
 
 def get_editor_support_emails():
     if "EDITOR_SUPPORT_EMAIL" in os.environ:
-        return json.loads(os.getenv("EDITOR_SUPPORT_EMAIL").strip())
+        return [x.strip() for x in os.getenv("EDITOR_SUPPORT_EMAIL").split(',')]
     else:
         raise CrawlerException("Tech support email is not defined in the environment variables. !!!")
