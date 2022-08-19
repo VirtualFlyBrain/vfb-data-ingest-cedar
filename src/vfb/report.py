@@ -217,13 +217,13 @@ def get_crawler_email():
 
 def get_tech_support_emails():
     if "TECH_SUPPORT_EMAIL" in os.environ:
-        return json.loads(os.getenv("TECH_SUPPORT_EMAIL"))
+        return json.loads(os.getenv("TECH_SUPPORT_EMAIL").strip())
     else:
         raise CrawlerException("Tech support email is not defined in the environment variables. !!!")
 
 
 def get_editor_support_emails():
     if "EDITOR_SUPPORT_EMAIL" in os.environ:
-        return json.loads(os.getenv("EDITOR_SUPPORT_EMAIL"))
+        return json.loads(os.getenv("EDITOR_SUPPORT_EMAIL").strip())
     else:
         raise CrawlerException("Tech support email is not defined in the environment variables. !!!")
