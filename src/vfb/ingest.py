@@ -47,9 +47,12 @@ def ingest_data(user_orcid, metadata, template_instance, crawling_types):
                 response = ingest_data_obj(user_orcid, metadata, template_instance, crawling_types, data, template_conf)
                 if isinstance(data, Split):
                     created_split = response["short_form"]
-                results.append(response)
+                if response:
+                    results.append(response)
         else:
-            results.append(ingest_data_obj(user_orcid, metadata, template_instance, crawling_types, data_obj, template_conf))
+            response = ingest_data_obj(user_orcid, metadata, template_instance, crawling_types, data_obj, template_conf)
+            if response:
+                results.append(response)
 
     return results
 
