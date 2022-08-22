@@ -91,7 +91,7 @@ class VFBKB():
         return True
 
     def update_last_crawling_time(self, template_instance_id, editor, last_crawled_on):
-        q = "MERGE (n:CrawlerLog {{iri:'{template_id}', owner:'{owner}' lastCrawledOn: '{lastCrawledOn}'}})"\
+        q = "MERGE (n:CrawlerLog {{iri:'{template_id}', owner:'{owner}', lastCrawledOn: '{lastCrawledOn}'}})"\
             .format(template_id=template_instance_id, owner=editor, lastCrawledOn=last_crawled_on)
         self.query(q=q)
 
