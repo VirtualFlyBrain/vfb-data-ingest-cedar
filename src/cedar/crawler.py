@@ -37,21 +37,14 @@ def crawl(crawling_types):
                     result = ingest.ingest_data(editor, instance_data, instance, crawling_types)
                     if result:
                         update_time = dt.strptime(instance_data["pav:lastUpdatedOn"], DATE_FORMAT)
-                        # db.update_last_crawling_time(instance, editor, dt.strftime(update_time, DATE_FORMAT))
+                        db.update_last_crawling_time(instance, editor, dt.strftime(update_time, DATE_FORMAT))
                         reports.append(Report(template, instance, editor, str(result[0])))
-            except TechnicalException as err:
+            except (TechnicalException, ContentException) as err:
                 log.error("Exception occurred while processing instance '{}' of template '{}'.".format(instance, template))
                 log.error("Exception occurred during crawling: " + err.message)
                 report = Report(template, instance, editor)
                 report.set_error(err.message)
-                report.set_error_type(type(TechnicalException).__name__)
-                reports.append(report)
-            except ContentException as err:
-                log.error("Exception occurred while processing instance '{}' of template '{}'.".format(instance, template))
-                log.error("Exception occurred during crawling: " + err.message)
-                report = Report(template, instance, editor)
-                report.set_error(err.message)
-                report.set_error_type(type(ContentException).__name__)
+                report.set_error_type(type(err).__name__)
                 reports.append(report)
 
     return reports
